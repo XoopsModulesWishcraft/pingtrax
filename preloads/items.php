@@ -33,9 +33,23 @@ class PingtraxItemsPreload extends XoopsPreloadItem
     */
     function eventCoreIncludeCommonEnd($args)
     {
-     	global $moduleitem;
+     	global $pingtraxitem;
      	$pluginHandler = xoops_getmodulehandler('plugins', 'pingtrax');
-     	$moduleitem = $pluginHandler->getIntialItemArray();
+     	$pingtraxitem = $pluginHandler->getItemObject();
     }
-   
+  
+    /**
+     * @param $args
+     */
+    function eventCoreFooterEnd($args)
+    {
+    	global $pingtraxitem;
+    	if (is_a($pingtraxitem, "PingtraxItems"))
+    	{
+    		$pluginHandler = xoops_getmodulehandler('plugins', 'pingtrax');
+    		if ($pingtraxitem->getVar('discover-hook')=='unknown')
+    			$pingtraxitem->setVar('discover-hook', 'preloader');
+    		$pingtraxitem = $pluginHandler->setFooterItem($pingtraxitem);
+    	}
+    }
 }

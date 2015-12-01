@@ -76,9 +76,9 @@ class PingtraxItems extends XoopsObject
         $this->initVar('module-php-self', XOBJ_DTYPE_OTHER, '', false, 150);
         $this->initVar('module-get', XOBJ_DTYPE_ARRAY, array(), false);
   		$this->initVar('item-author-uid', XOBJ_DTYPE_INT, 0, false);
-        $this->initVar('item-author-name', XOBJ_DTYPE_TXTBOX, 0, false, 64);
-        $this->initVar('item-title', XOBJ_DTYPE_TXTBOX, 0, false, 180);
-        $this->initVar('item-description', XOBJ_DTYPE_TXTBOX, 0, false, 250);
+        $this->initVar('item-author-name', XOBJ_DTYPE_TXTBOX, '', false, 64);
+        $this->initVar('item-title', XOBJ_DTYPE_TXTBOX, '', false, 180);
+        $this->initVar('item-description', XOBJ_DTYPE_TXTBOX, '', false, 250);
         $this->initVar('item-protocol', XOBJ_DTYPE_ENUM, XOOPS_PROT, true, false, false, false, array('https://','http://'));
         $this->initVar('item-domain', XOBJ_DTYPE_TXTBOX, parse_url(XOOPS_URL, PHP_URL_HOST), true, 150);
         $this->initVar('item-referer-uri', XOBJ_DTYPE_TXTBOX, $_SERVER["REQUEST_URI"], true, 250);
@@ -88,7 +88,6 @@ class PingtraxItems extends XoopsObject
         $this->initVar('feed-referer-uri', XOBJ_DTYPE_TXTBOX, parse_url(XOOPS_URL, PHP_URL_PATH) . '/backend.php', true, 250);
         $this->initVar('discovery-hook', XOBJ_DTYPE_ENUM, 'unknown', true, false, false, false, array('php','preloader','smarty','combination','unknown'));
         $this->initVar('user-session', XOBJ_DTYPE_ENUM, 'unknown', true, false, false, false, array('admin','user','guest','unknown'));
-        $this->initVar('written', XOBJ_DTYPE_INT, 0, false);
         $this->initVar('created', XOBJ_DTYPE_INT, 0, false);
         $this->initVar('updated', XOBJ_DTYPE_INT, 0, false);
         $this->initVar('offline', XOBJ_DTYPE_INT, 0, false);
@@ -115,7 +114,17 @@ class PingtraxItemsHandler extends XoopsPersistableObjectHandler
     {
     	if ($object->isNew())
     	{
-    		$object->setVar('created', time());
+    		$criteria = new Criteria('referer', $object->getVar('referer'));
+    		if ($this->getCount($criteria)==0)
+    			$object->setVar('created', time());
+    		else 
+    		{
+    			$objs = $this->getObjects($criteria, false);
+    			if (isset($objs[0]))
+    				return $objs[0]->getVar('id');
+    			else 
+    				return false;
+    		}
     	} else {
     		$object->setVar('updated', time());
     	}
