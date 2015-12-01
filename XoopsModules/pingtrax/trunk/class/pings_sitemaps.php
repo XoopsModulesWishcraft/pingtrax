@@ -1,6 +1,6 @@
 <?php
 /**
- * Pintrax Database Class Handler module
+ * Pingtrax Database Class Handler module
  *
  * You may not change or alter any portion of this comment or credits
  * of supporting developers from this source code or any supporting source code
@@ -22,7 +22,7 @@
 
 
 /**
- * Class PintraxPings_sitemaps
+ * Class PingtraxPings_sitemaps
  *
  * @subpackage      pingtrax
  *
@@ -56,9 +56,9 @@ class PingtraxPings_sitemaps extends XoopsObject
 }
 
 /**
- * Class PintraxPings_sitemapsHandler
+ * Class PingtraxPings_sitemapsHandler
  */
-class PintraxPings_sitemapsHandler extends XoopsPersistableObjectHandler
+class PingtraxPings_sitemapsHandler extends XoopsPersistableObjectHandler
 {
 
     /**

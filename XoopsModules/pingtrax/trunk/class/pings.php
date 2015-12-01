@@ -1,6 +1,6 @@
 <?php
 /**
- * Pintrax Database Class Handler module
+ * Pingtrax Database Class Handler module
  *
  * You may not change or alter any portion of this comment or credits
  * of supporting developers from this source code or any supporting source code
@@ -22,7 +22,7 @@
 
 
 /**
- * Class PintraxPings
+ * Class PingtraxPings
  *
  * @subpackage      pingtrax
  *
@@ -66,7 +66,6 @@ class PingtraxPings extends XoopsObject
         $this->initVar('sleep-till', XOBJ_DTYPE_INT, 0, false);
         $this->initVar('success-time', XOBJ_DTYPE_INT, 0, false);
         $this->initVar('failure-time', XOBJ_DTYPE_INT, 0, false);
-        $this->initVar('written', XOBJ_DTYPE_INT, 0, false);
         $this->initVar('created', XOBJ_DTYPE_INT, 0, false);
         $this->initVar('updated', XOBJ_DTYPE_INT, 0, false);
         $this->initVar('offline', XOBJ_DTYPE_INT, 0, false);
@@ -75,17 +74,47 @@ class PingtraxPings extends XoopsObject
 }
 
 /**
- * Class PintraxPingsHandler
+ * Class PingtraxPingsHandler
  */
-class PintraxPingsHandler extends XoopsPersistableObjectHandler
+class PingtraxPingsHandler extends XoopsPersistableObjectHandler
 {
 
+	/**
+	 * var string		URL of JSON Resource for Install
+	 */
+	var $_resource 	=	"https://sourceforge.net/p/xoops/svn/HEAD/tree/XoopsModules/pingtrax/data/ping-resources.json?format=raw";
+	
     /**
      * @param null|object $db
      */
     function __construct(&$db)
     {
         parent::__construct($db, "pingtrax_pings", 'PingtraxPings', 'id', 'referer');
+        
+        $criteria = new Criteria('id',0,"<>");
+        if ($this->getCount($criteria)==0)
+        {
+        	$data = json_decode(file_get_contents($this->_resource), true);
+        	foreach($data as $referer => $values)
+        	{
+        		$obj = $this->create(true);
+        		$obj->setVar('referer', $referer);
+        		$obj->setVar('type', $values['type']);
+        		$obj->setVar('uri', $values['uri']);
+        		$this->insert($obj);
+        	}
+        }
+    }
+    
+    function insert($object = NULL, $force = true)
+    {
+    	if ($object->isNew())
+    	{
+    		$object->setVar('created', time());
+    	} else {
+    		$object->setVar('updated', time());
+    	}
+    	return parent::insert($object, $force);
     }
 
  
