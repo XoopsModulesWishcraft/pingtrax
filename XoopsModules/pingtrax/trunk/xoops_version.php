@@ -79,31 +79,12 @@ $modversion['templates']                   = array();
 $modversion['hasMain'] = 0;
 
 $modversion['config']   = array();
-/*
 $modversion['config'][] = array(
-    'name'        => 'htaccess',
-    'title'       => '_MI_PINGTRAX_HTACCESS',
-    'description' => '_MI_PINGTRAX_HTACCESS_DESC',
-    'formtype'    => 'yesno',
-    'valuetype'   => 'int',
-    'default'     => false
+    'name'        => 'default_feed_url',
+    'title'       => '_MI_PINGTRAX_DEFAULT_FEED_URL',
+    'description' => '_MI_PINGTRAX_DEFAULT_FEED_URL_DESC',
+    'formtype'    => 'text',
+    'valuetype'   => 'text',
+    'default'     => '%xoops_url%/backend.php'
 );
 
-$modversion['config'][] = array(
-    'name'        => 'base_url',
-    'title'       => '_MI_PINGTRAX_BASEURL',
-    'description' => '_MI_PINGTRAX_BASEURL_DESC',
-    'formtype'    => 'textbox',
-    'valuetype'   => 'text',
-    'default'     => "ipv4"
-);
-
-$modversion['config'][] = array(
-    'name'        => 'end_url',
-    'title'       => '_MI_PINGTRAX_ENDURL',
-    'description' => '_MI_PINGTRAX_ENDURL_DESC',
-    'formtype'    => 'textbox',
-    'valuetype'   => 'text',
-    'default'     => ".html"
-);
-*/
