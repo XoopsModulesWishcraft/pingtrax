@@ -27,25 +27,6 @@ defined('XOOPS_ROOT_PATH') || die('XOOPS root path not defined');
  */
 class PingtraxPluginsDefault extends PingtraxPlugins
 {
-    /**
-     * @param $args
-    
-    function eventCoreIncludeFunctionsRedirectheader($args)
-    {
-        $context = stream_context_create(array('http' => array(
-       'method' => "POST",
-       'header' => "Content-Type: text/xml\r\n",
-       'content' => $xml
-   )));
-   $file = @file_get_contents($post_to, false, $context);
-   if ($file === false) { echo '<p>Couldn\'t connect!</p>'; }
-   elseif ($file) {
-       echo '<p>The following response was returned:</p>';
-      echo '<pre>'.htmlspecialchars($file).'</pre>';
-  } else {
-      echo '<p>Empty response!</p>';
-  }
-    }
- 	*/
+	
    
 }

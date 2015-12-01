@@ -29,11 +29,25 @@ class PingtraxPlugins extends XoopsObject
 {
   
 	/**
+	 * @var array
+	 */
+	var $_configs = array();
+	
+	/**
 	 *
 	 */
 	function __construct()
 	{
 		$this->XoopsObject();
+		
+		// Load Module Config's into object array
+		$moduleHandler = xoops_gethandler('module');
+		$module = $moduleHandler->getByDirname('pingtrax');
+		if (is_a($module, 'XoopsModule'))
+		{
+			$configHandler = xoops_gethandler('config');
+			$this->_configs = $configHandler->getConfigList($module->getVar('mid'));
+		}
 	}
  
 	/**
@@ -60,8 +74,8 @@ class PingtraxPlugins extends XoopsObject
 				{ 
 					if (substr(strtolower($class), 0, strlen($this->getModuleDirname()))==strtolower($this->getModuleDirname()) && (!strpos(strtolower($class), 'categor') && !strpos(strtolower($this->getModulePHPSelf()), 'categor')))
 					{
-						if (is_a(new $class(), "XoopsPersistableObjectHandler"))
-							return $class;
+						if (is_a(@new $class(), "XoopsPersistableObjectHandler"))
+							return strtolower(str_replace(array(ucfirst($this->getModuleDirname()), $this->getModuleDirname(), 'handler', 'Handler'), '', $class));
 					}
 				}
 				
@@ -186,6 +200,165 @@ class PingtraxPlugins extends XoopsObject
 			return substr($_SERVER["PHP_SELF"], strlen(XOOPS_ROOT_PATH)-1);
 		return $_SERVER["PHP_SELF"];
 	}
+
+
+	/**
+	 *
+	 */
+	function getItemTitle()
+	{
+		switch ($this->getModulePHPSelf())
+		{
+			default:
+				
+				if (is_object($GLOBALS['xoopsTpl']))
+					return $GLOBALS['xoopsTpl']->_tpl_vars['xoops_pagetitle'];
+				break;
+		}
+		return $GLOBALS["xoopsConfig"]['sitename'];
+	}
+	
+
+	/**
+	 *
+	 */
+	function getItemDescription()
+	{
+		switch ($this->getModulePHPSelf())
+		{
+			default:
+				
+				if (is_object($GLOBALS['xoopsTpl']))
+					return $GLOBALS['xoopsTpl']->_tpl_vars['xoops_meta_description'];
+				break;
+		}
+		return $GLOBALS["xoopsConfigMetaFooter"]['meta_description'];
+	}
+	
+	/**
+	 *
+	 */
+	function getItemAuthorUID()
+	{
+		static $uid = 0;
+		if ($uid = 0)
+			switch ($this->getModulePHPSelf())
+			{
+				default:
+					foreach($GLOBALS['xoopsTpl']->_tpl_vars as $key => $values)
+					{
+						if ($key = 'uid' && is_numeric($values))
+							$uid = $values;
+						elseif(is_array($values))
+							$uid = explore_array($values, 'uid', 'uid=([0-9]+)');
+						elseif(is_string($values))
+						{
+							preg_match('uid=([0-9])+', $values, $matches);
+							if (!empty($matches))
+							{
+								foreach($matches as $match)
+								{
+									if (is_array($match))
+									{
+										foreach($match as $value)
+											if (is_numeric($value))
+											{
+												$uid = $value;
+												continue;
+												continue;
+												continue;
+												continue;
+											}
+									} else {
+											$uid = $match;
+											continue;
+											continue;
+											continue;
+									}
+								}
+							}
+						}
+						if ($uid>0)
+							continue;
+					}
+			}
+		return $uid;
+	}
+	
+	function explore_array($array = array(), $key = 'uid', $pattern = 'uid=([0-9]+)')
+	{
+		foreach($array as $key => $values)
+		{
+			if ($key = 'uid' && is_numeric($values))
+					return $values;
+				elseif(is_array($values))
+					return explore_array($values, 'uid', 'uid=([0-9]+)');
+				elseif(is_string($values))
+				{
+					preg_match('uid=([0-9])+', $values, $matches);
+					if (!empty($matches))
+						foreach($matches as $match)
+							if (is_array($match))
+								foreach($match as $value)
+									if (is_numeric($value))
+									{
+										return $value;
+									}
+							else 
+								return $match;
+				}
+		}
+	}
+	
+	/**
+	 *
+	 */
+	function getItemAuthorName()
+	{
+		switch ($this->getModulePHPSelf())
+		{
+			default:
+				if ($this->getItemAuthorUID()>0)
+				{
+					$userHandler = xoops_gethandler('user');
+					$user = $userHandler->get($this->getItemAuthorUID());
+					if (is_a($user, "XoopsUser"))
+					{
+						if (trim($user->getVar('name'))!='')
+							return trim($user->getVar('name'));
+						else 
+							return trim($user->getVar('uname'));
+					}
+				}
+		}
+		return $GLOBALS["xoopsConfig"]['sitename'];
+	}
+	
+
+	/**
+	 *
+	 */
+	function getFeedProtocol()
+	{
+		return parse_url(strtolower($this->_configs['default_feed_url']), PHP_URL_SCHEME);
+	}
+	
+	/**
+	 *
+	 */
+	function getFeedDomain()
+	{
+		return parse_url(strtolower($this->_configs['default_feed_url']), PHP_URL_HOST);
+	}
+	
+	/**
+	 *
+	 */
+	function getFeedRefererURI()
+	{
+		return parse_url(strtolower($this->_configs['default_feed_url']), PHP_URL_PATH) . "?" .parse_url(strtolower($this->_configs['default_feed_url']), PHP_URL_QUERY); 
+	}
+	
 }
 
 
@@ -213,7 +386,7 @@ class PingtraxPluginsHandler extends XoopsPersistableObjectHandler
 		parent::__construct($db);
 	}
 
-	function getIntialItemArray()
+	function getItemObject()
 	{
 		$ret = array();
 		if (is_a($GLOBALS['xoopsModule'], 'XoopsModule'))
@@ -244,14 +417,55 @@ class PingtraxPluginsHandler extends XoopsPersistableObjectHandler
 			$ret['item-protocol'] = $this->_plugins[$dirname]->getItemProtocol();
 			$ret['item-domain'] = $this->_plugins[$dirname]->getItemDomain();
 			$ret['item-referer-uri'] = $this->_plugins[$dirname]->getItemRefererURI();
+			$ret['feed-protocol'] = $this->_plugins[$dirname]->getFeedProtocol();
+			$ret['feed-domain'] = $this->_plugins[$dirname]->getFeedDomain();
+			$ret['feed-referer-uri'] = $this->_plugins[$dirname]->getFeedRefererURI();
 			$ret['item-php-self'] = $this->_plugins[$dirname]->getItemPHPSelf();
 			$ret['referer'] = $this->getReferer($ret);
+		}
+		if (!empty($ret))
+		{
+			$itemsHandler = xoops_getmodulehandler('items', 'pingtrax');
+			$item = $itemHandler->create(true);
+			$item->setVars($ret);
+			$ret = $itemHandler->get($itemHandler->insert($item));
 		}
 		return $ret;
 	}
 	
 	function getReferer($ret = array())
 	{
-		return sha1($ret['item-php-self'] . $ret['item-referer-uri'] . $ret['module-dirname'] . $ret['module-class'] . $ret['item-category-id'] . $ret['module-item-id'] . $ret['module-php-self'] . json_encode($ret['module-get'], true) . $ret['item-protocol'] . $ret['item-domain']);
+		return sha1($ret['item-php-self'] . $ret['item-referer-uri'] . $ret['feed-protocol'] . $ret['feed-domain'] . $ret['feed-referer-uri'] . $ret['module-dirname'] . $ret['module-class'] . $ret['item-category-id'] . $ret['module-item-id'] . $ret['module-php-self'] . json_encode($ret['module-get'], true) . $ret['item-protocol'] . $ret['item-domain']);
+	}
+	
+	function setFooterItem(PingtraxItems $item)
+	{
+		if (is_a($GLOBALS['xoopsModule'], 'XoopsModule'))
+		{
+			if (file_exists($file = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . ($dirname = $GLOBALS['xoopsModule']->getVar('dirname')) . '.php'))
+			{
+				require_once $file;
+			} elseif (file_exists($file = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . ($dirname = $this->_default) . '.php'))
+			{
+				require_once $file;
+			}
+		} elseif (file_exists($file = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . ($dirname = $this->_default) . '.php'))
+		{
+			require_once $file;
+		}
+		if (class_exists($class = "PingtraxPlugins".ucfirst(strtolower($dirname))) && empty($this->_plugins[$dirname]))
+		{
+			$this->_plugins[$dirname] = new $class();
+		}
+		if (is_object($this->_plugins[$dirname]))
+		{
+			$item->setVar('item-author-uid', $this->_plugins[$dirname]->getItemAuthorUID());
+			$item->setVar('item-author-name', $this->_plugins[$dirname]->getItemAuthorName());
+			$item->setVar('item-title', $this->_plugins[$dirname]->getItemTitle());
+			$item->setVar('item-description', $this->_plugins[$dirname]->getItemTitle());
+			$itemsHandler = xoops_getmodulehandler('items', 'pingtrax');
+			return $itemHandler->get($itemHandler->insert($item));
+		}
+		return $item;
 	}
 }
