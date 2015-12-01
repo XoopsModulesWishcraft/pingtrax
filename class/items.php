@@ -1,6 +1,6 @@
 <?php
 /**
- * Pintrax Database Class Handler module
+ * Pingtrax Database Class Handler module
  *
  * You may not change or alter any portion of this comment or credits
  * of supporting developers from this source code or any supporting source code
@@ -22,7 +22,7 @@
 
 
 /**
- * Class PintraxItems
+ * Class PingtraxItems
  *
  * @subpackage      pingtrax
  *
@@ -97,9 +97,9 @@ class PingtraxItems extends XoopsObject
 }
 
 /**
- * Class PintraxItemsHandler
+ * Class PingtraxItemsHandler
  */
-class PintraxItemsHandler extends XoopsPersistableObjectHandler
+class PingtraxItemsHandler extends XoopsPersistableObjectHandler
 {
 
     /**
@@ -110,5 +110,37 @@ class PintraxItemsHandler extends XoopsPersistableObjectHandler
         parent::__construct($db, "pingtrax_items", 'PingtraxItems', 'id', 'referer');
     }
 
+
+    function insert($object = NULL, $force = true)
+    {
+    	if ($object->isNew())
+    	{
+    		$object->setVar('created', time());
+    	} else {
+    		$object->setVar('updated', time());
+    	}
+    	switch ($object->getVar('user-session'))
+    	{
+    		default:
+    		case 'unknown':
+    			if (is_object($GLOBALS['xoopsUser']))
+    			{
+    				if ($GLOBALS['xoopsUser']->isAdmin())
+    					$object->setVar('user-session', 'admin');
+    			}
+    		case 'admin':
+    			if (is_object($GLOBALS['xoopsUser']))
+    			{
+    				if (!$GLOBALS['xoopsUser']->isAdmin())
+    					$object->setVar('user-session', 'user');
+    			} 
+    		case 'user':
+    			if (!is_object($GLOBALS['xoopsUser']))
+    				$object->setVar('user-session', 'guest');
+    		case 'guest':
+    			break;
+    	}
+    	return parent::insert($object, $force);
+    }
  
 }

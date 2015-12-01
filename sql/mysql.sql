@@ -1,6 +1,4 @@
 
-DROP TABLE IF EXISTS `pingtrax_items`;
-
 CREATE TABLE `pingtrax_items` (
   `id` mediumint(20) NOT NULL AUTO_INCREMENT,
   `referer` varchar(44) NOT NULL DEFAULT '',
@@ -34,8 +32,6 @@ CREATE TABLE `pingtrax_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 PACK_KEYS=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC KEY_BLOCK_SIZE=16;
 
 
-DROP TABLE IF EXISTS `pingtrax_items_pings`;
-
 CREATE TABLE `pingtrax_items_pings` (
   `id` mediumint(32) NOT NULL AUTO_INCREMENT,
   `ping-referer` varchar(44) NOT NULL DEFAULT '',
@@ -46,8 +42,6 @@ CREATE TABLE `pingtrax_items_pings` (
   KEY `CHRONOLOGISTICS` (`ping-referer`,`item-referer`,`when`) USING BTREE KEY_BLOCK_SIZE=64
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 PACK_KEYS=1 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC KEY_BLOCK_SIZE=8;
 
-DROP TABLE IF EXISTS `pingtrax_items_sitemaps`;
-
 CREATE TABLE `pingtrax_items_sitemaps` (
   `id` mediumint(32) NOT NULL AUTO_INCREMENT,
   `map-referer` varchar(44) NOT NULL DEFAULT '',
@@ -57,8 +51,6 @@ CREATE TABLE `pingtrax_items_sitemaps` (
   KEY `SEARCH` (`id`,`map-referer`,`item-referer`) USING BTREE,
   KEY `CHRONOLOGISTICS` (`map-referer`,`item-referer`,`when`) USING BTREE KEY_BLOCK_SIZE=64
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 PACK_KEYS=1 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC KEY_BLOCK_SIZE=8;
-
-DROP TABLE IF EXISTS `pingtrax_pings`;
 
 CREATE TABLE `pingtrax_pings` (
   `id` int(14) NOT NULL AUTO_INCREMENT,
@@ -79,8 +71,6 @@ CREATE TABLE `pingtrax_pings` (
   KEY `CHRONOLOGISTICS` (`id`,`referer`,`created`,`updated`,`offlined`,`failure-time`,`success-time`,`sleep-till`) USING BTREE KEY_BLOCK_SIZE=128
 ) ENGINE=InnoDB AUTO_INCREMENT=150 DEFAULT CHARSET=utf8 PACK_KEYS=1 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC KEY_BLOCK_SIZE=16;
 
-DROP TABLE IF EXISTS `pingtrax_pings_sitemaps`;
-
 CREATE TABLE `pingtrax_pings_sitemaps` (
   `id` mediumint(32) NOT NULL AUTO_INCREMENT,
   `map-referer` varchar(44) NOT NULL DEFAULT '',
@@ -90,8 +80,6 @@ CREATE TABLE `pingtrax_pings_sitemaps` (
   KEY `SEARCH` (`id`,`map-referer`,`ping-referer`) USING BTREE,
   KEY `CHRONOLOGISTICS` (`map-referer`,`ping-referer`,`when`) USING BTREE KEY_BLOCK_SIZE=64
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 PACK_KEYS=1 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC KEY_BLOCK_SIZE=8;
-
-DROP TABLE IF EXISTS `pingtrax_sitemaps`;
 
 CREATE TABLE `pingtrax_sitemaps` (
   `id` int(10) NOT NULL AUTO_INCREMENT,

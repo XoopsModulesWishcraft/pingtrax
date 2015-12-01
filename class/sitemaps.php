@@ -1,6 +1,6 @@
 <?php
 /**
- * Pintrax Database Class Handler module
+ * Pingtrax Database Class Handler module
  *
  * You may not change or alter any portion of this comment or credits
  * of supporting developers from this source code or any supporting source code
@@ -22,7 +22,7 @@
 
 
 /**
- * Class PintraxSitemaps
+ * Class PingtraxSitemaps
  * 
  * Database MySQL Table:-
  * 
@@ -81,9 +81,9 @@ class PingtraxSitemaps extends XoopsObject
 }
 
 /**
- * Class PintraxSitemapsHandler
+ * Class PingtraxSitemapsHandler
  */
-class PintraxSitemapsHandler extends XoopsPersistableObjectHandler
+class PingtraxSitemapsHandler extends XoopsPersistableObjectHandler
 {
 
     /**
@@ -94,5 +94,16 @@ class PintraxSitemapsHandler extends XoopsPersistableObjectHandler
         parent::__construct($db, "pingtrax_sitemaps", 'PingtraxSitemaps', 'id', 'referer');
     }
 
+
+    function insert($object = NULL, $force = true)
+    {
+    	if ($object->isNew())
+    	{
+    		$object->setVar('created', time());
+    	} else {
+    		$object->setVar('updated', time());
+    	}
+    	return parent::insert($object, $force);
+    }
  
 }
