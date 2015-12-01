@@ -72,9 +72,10 @@ class PingtraxPlugins extends XoopsObject
 				
 				foreach(get_declared_classes() as $class)
 				{ 
-					if (substr(strtolower($class), 0, strlen($this->getModuleDirname()))==strtolower($this->getModuleDirname()) && (!strpos(strtolower($class), 'categor') && !strpos(strtolower($this->getModulePHPSelf()), 'categor')))
+					if ($this->getModuleDirname() != '' && substr(strtolower($class), 0, strlen($this->getModuleDirname()))==strtolower($this->getModuleDirname()) && (!strpos(strtolower($class), 'categor') && !strpos(strtolower($this->getModulePHPSelf()), 'categor')))
 					{
-						if (is_a(@new $class(), "XoopsPersistableObjectHandler"))
+						@$obj = new $class();
+						if (is_a($obj, "XoopsPersistableObjectHandler"))
 							return strtolower(str_replace(array(ucfirst($this->getModuleDirname()), $this->getModuleDirname(), 'handler', 'Handler'), '', $class));
 					}
 				}
@@ -93,7 +94,7 @@ class PingtraxPlugins extends XoopsObject
 		{
 			default:
 				
-				$idnaming = explode(array("\n", "\n\r", "\r\n"), file_get_contents(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'include' . DIRECTORY_SEPARATOR . 'item-id-names.txt'));
+				$idnaming = explode(PHP_EOL, file_get_contents(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'include' . DIRECTORY_SEPARATOR . 'item-id-names.txt'));
 				foreach($_GET as $key => $value)
 				{
 					if (!is_array($value))
@@ -102,7 +103,7 @@ class PingtraxPlugins extends XoopsObject
 						{
 							if (strpos($key, $idname) && is_numeric($_GET[$key]))
 								$id = $_GET[$key];
-							elseif (is_numeric($_GET[$key]) && !in_array($key, explode(array("\n", "\n\r", "\r\n"), file_get_contents(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'include' . DIRECTORY_SEPARATOR . 'exclude-names.txt'))))
+							elseif (is_numeric($_GET[$key]) && !in_array($key, explode(PHP_EOL, file_get_contents(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'include' . DIRECTORY_SEPARATOR . 'exclude-names.txt'))))
 								$id = $_GET[$key];
 						}
 					}
@@ -147,7 +148,7 @@ class PingtraxPlugins extends XoopsObject
 		{
 			default:
 		
-				$idnaming = explode(array("\n", "\n\r", "\r\n"), file_get_contents(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'include' . DIRECTORY_SEPARATOR . 'category-id-names.txt'));
+				$idnaming = explode(PHP_EOL, file_get_contents(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'include' . DIRECTORY_SEPARATOR . 'category-id-names.txt'));
 				foreach($_GET as $key => $value)
 				{
 					if (!is_array($value))
@@ -156,7 +157,7 @@ class PingtraxPlugins extends XoopsObject
 						{
 							if (strpos($key, $idname) && is_numeric($_GET[$key]))
 								$id = $_GET[$key];
-							elseif ($id = 0 && is_numeric($_GET[$key]) && !in_array($key, explode(array("\n", "\n\r", "\r\n"), file_get_contents(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'include' . DIRECTORY_SEPARATOR . 'exclude-names.txt'))))
+							elseif ($id = 0 && is_numeric($_GET[$key]) && !in_array($key, explode(PHP_EOL, file_get_contents(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'include' . DIRECTORY_SEPARATOR . 'exclude-names.txt'))))
 								$id = $_GET[$key];
 						}
 					}
@@ -186,8 +187,6 @@ class PingtraxPlugins extends XoopsObject
 	 */
 	function getItemRefererURI()
 	{
-		if (parse_url(strtolower(XOOPS_URL), PHP_URL_PATH) == substr(strtolower($_SERVER["REQUEST_URI"]), 0, strlen(parse_url(strtolower(XOOPS_URL), PHP_URL_PATH))))
-			return substr($_SERVER["REQUEST_URI"], strlen(parse_url(strtolower(XOOPS_URL), PHP_URL_PATH))-1);
 		return $_SERVER["REQUEST_URI"];
 	}
 
@@ -340,7 +339,7 @@ class PingtraxPlugins extends XoopsObject
 	 */
 	function getFeedProtocol()
 	{
-		return parse_url(strtolower($this->_configs['default_feed_url']), PHP_URL_SCHEME);
+		return parse_url(strtolower(str_replace("%xoops_url%", XOOPS_URL, $this->_configs['default_feed_url'])), PHP_URL_SCHEME);
 	}
 	
 	/**
@@ -348,7 +347,7 @@ class PingtraxPlugins extends XoopsObject
 	 */
 	function getFeedDomain()
 	{
-		return parse_url(strtolower($this->_configs['default_feed_url']), PHP_URL_HOST);
+		return parse_url(strtolower(str_replace("%xoops_url%", XOOPS_URL, $this->_configs['default_feed_url'])), PHP_URL_HOST);
 	}
 	
 	/**
@@ -356,7 +355,7 @@ class PingtraxPlugins extends XoopsObject
 	 */
 	function getFeedRefererURI()
 	{
-		return parse_url(strtolower($this->_configs['default_feed_url']), PHP_URL_PATH) . "?" .parse_url(strtolower($this->_configs['default_feed_url']), PHP_URL_QUERY); 
+		return parse_url(strtolower(str_replace("%xoops_url%", XOOPS_URL, $this->_configs['default_feed_url'])), PHP_URL_PATH) . "?" .parse_url(strtolower($this->_configs['default_feed_url']), PHP_URL_QUERY); 
 	}
 	
 }
@@ -408,6 +407,7 @@ class PingtraxPluginsHandler extends XoopsPersistableObjectHandler
 		}
 		if (is_object($this->_plugins[$dirname]))
 		{
+			$ret['type'] = 'local';
 			$ret['module-dirname'] = $this->_plugins[$dirname]->getModuleDirname();
 			$ret['module-class'] = $this->_plugins[$dirname]->getModuleClass();
 			$ret['module-item-id'] = $this->_plugins[$dirname]->getModuleItemID();
@@ -426,9 +426,9 @@ class PingtraxPluginsHandler extends XoopsPersistableObjectHandler
 		if (!empty($ret))
 		{
 			$itemsHandler = xoops_getmodulehandler('items', 'pingtrax');
-			$item = $itemHandler->create(true);
+			$item = $itemsHandler->create(true);
 			$item->setVars($ret);
-			$ret = $itemHandler->get($itemHandler->insert($item));
+			$ret = $itemsHandler->get($itemsHandler->insert($item));
 		}
 		return $ret;
 	}
@@ -464,7 +464,7 @@ class PingtraxPluginsHandler extends XoopsPersistableObjectHandler
 			$item->setVar('item-title', $this->_plugins[$dirname]->getItemTitle());
 			$item->setVar('item-description', $this->_plugins[$dirname]->getItemTitle());
 			$itemsHandler = xoops_getmodulehandler('items', 'pingtrax');
-			return $itemHandler->get($itemHandler->insert($item));
+			return $itemsHandler->get($itemsHandler->insert($item));
 		}
 		return $item;
 	}
