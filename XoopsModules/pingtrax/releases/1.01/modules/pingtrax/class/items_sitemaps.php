@@ -149,11 +149,24 @@ class PingtraxItems_sitemaps extends XoopsObject
     		{
     			$dom = str_get_html($html);
     			// Does headers
-    			$head = $dom->find("head");
-    			$changes .+ $this->setVars(array('header-md5' => md5($head->innertext), 'header-bytes' => strlen($head->innertext)));
+    			$headbytes = 0;
+    			$headmd5 = '';
+    			foreach($dom->find("head") as $head)
+    			{
+    				$headmd5 = md5($headmd5 . sha1($head->innertext));
+    				$headbytes = $headbytes + strlen($head->innertext);
+    			}
+    			$changes .+ $this->setVars(array('header-md5' => $headmd5, 'header-bytes' => $headbytes));
     			// Does Full Body
-    			$body = $dom->find("body");
-    			$changes .+ $this->setVars(array('body-md5' => md5($body->plaintext), 'body-bytes' => strlen($body->plaintext)));
+
+    			$bodybytes = 0;
+    			$bodymd5 = '';
+    			foreach($dom->find('body') as $body)
+    			{
+    				$bodymd5 = md5($bodymd5 . sha1($body->plaintext));
+    				$bodybytes = $bodybytes + strlen($body->plaintext);
+    			}
+    			$changes .+ $this->setVars(array('body-md5' => $bodymd5, 'body-bytes' => $bodybytes));
     			// Does Tables
     			$tablesbytes = 0;
     			$tablesmd5 = '';
