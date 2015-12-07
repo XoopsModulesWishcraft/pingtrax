@@ -243,23 +243,23 @@ class PingtraxTrackback {
         if ($success) {
             // PingtraxTrackback retreived successfully...
             // Sending back an RSS (0.91) - trackback information from $response (array)...
-            $return .= "	<error>0</error> \n";
-            $return .= "	<rss version=\"0.91\"> \n";
-            $return .= "	<channel> \n";
-            $return .= "	  <title>" . $this->xml_safe($response['title']) . "</title> \n";
-            $return .= "	  <link>" . $this->xml_safe($response['trackback']) . "</link> \n";
-            $return .= "	  <description>" . $this->xml_safe($response['expert']) . "</description> \n";
-            $return .= "	  <item> \n";
-            $return .= "		<title>" . $this->xml_safe($response['title']) . "</title> \n";
-            $return .= "		<link>" . $this->xml_safe($response['permalink']) . "</link> \n";
-            $return .= "		<description>" . $this->xml_safe($response['expert']) . "</description> \n";
-            $return .= "	  </item> \n";
-            $return .= "	</channel> \n";
-            $return .= "	</rss> \n";
+            $return .= "\t<error>0</error> \n";
+            $return .= "\t<rss version=\"0.91\"> \n";
+            $return .= "\t<channel> \n";
+            $return .= "\t\t<title>" . $this->xml_safe($response['title']) . "</title> \n";
+            $return .= "\t\t<link>" . $this->xml_safe($response['trackback']) . "</link> \n";
+            $return .= "\t\t<description>" . $this->xml_safe($response['expert']) . "</description> \n";
+            $return .= "\t\t<item> \n";
+            $return .= "\t\t\t<title>" . $this->xml_safe($response['title']) . "</title> \n";
+            $return .= "\t\t\t<link>" . $this->xml_safe($response['permalink']) . "</link> \n";
+            $return .= "\t\t\t<description>" . $this->xml_safe($response['expert']) . "</description> \n";
+            $return .= "\t\t</item> \n";
+            $return .= "\t</channel> \n";
+            $return .= "\t</rss> \n";
         } else {
             // Something went wrong - provide reason from $response (string)...
-            $return .= "	<error>1</error> \n";
-            $return .= "	<message>" . $this->xml_safe($response) . "</message>\n";
+            $return .= "\t<error>1</error> \n";
+            $return .= "\t<message>" . $this->xml_safe($response) . "</message>\n";
         } 
         // End response to trackbacker
         $return .= "</response>";
@@ -296,17 +296,17 @@ class PingtraxTrackback {
 
         $return = "<!-- \n";
         $return .= "<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" \n";
-        $return .= "	xmlns:dc=\"http://purl.org/dc/elements/1.1/\" \n";
-        $return .= "	xmlns:trackback=\"http://madskills.com/public/xml/rss/module/trackback/\"> \n";
+        $return .= "\txmlns:dc=\"http://purl.org/dc/elements/1.1/\" \n";
+        $return .= "\txmlns:trackback=\"http://madskills.com/public/xml/rss/module/trackback/\"> \n";
         $return .= "<rdf:Description \n";
-        $return .= "	rdf:about=\"" . $this->xml_safe($permalink) . "\" \n";
-        $return .= "	dc:identifier=\"" . $this->xml_safe($permalink) . "\" \n";
-        $return .= "	trackback:ping=\"" . $this->xml_safe($trackback) . "\" \n";
-        $return .= "	dc:title=\"" . $this->xml_safe($title) . "\" \n";
-        $return .= "	dc:subject=\"TrackBack\" \n";
-        $return .= "	dc:description=\"" . $this->xml_safe($this->cut_short($expert)) . "\" \n";
-        $return .= "	dc:creator=\"" . $this->xml_safe($author) . "\" \n";
-        $return .= "	dc:date=\"" . $RFC822_date . "\" /> \n";
+        $return .= "\trdf:about=\"" . $this->xml_safe($permalink) . "\" \n";
+        $return .= "\tdc:identifier=\"" . $this->xml_safe($permalink) . "\" \n";
+        $return .= "\ttrackback:ping=\"" . $this->xml_safe($trackback) . "\" \n";
+        $return .= "\tdc:title=\"" . $this->xml_safe($title) . "\" \n";
+        $return .= "\tdc:subject=\"TrackBack\" \n";
+        $return .= "\tdc:description=\"" . $this->xml_safe($this->cut_short($expert)) . "\" \n";
+        $return .= "\tdc:creator=\"" . $this->xml_safe($author) . "\" \n";
+        $return .= "\tdc:date=\"" . $RFC822_date . "\" /> \n";
         $return .= "</rdf:RDF> \n";
         $return .= "-->  \n";
 

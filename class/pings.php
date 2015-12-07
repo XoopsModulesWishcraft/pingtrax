@@ -71,6 +71,32 @@ class PingtraxPings extends XoopsObject
         $this->initVar('offline', XOBJ_DTYPE_INT, 0, false);
     }
 
+    /**
+     * 
+     * @param PingtraxItems $item
+     * @return mixed
+     */
+    function getPingURL(PingtraxItems $item)
+    {
+    	$uri = $this->getVar('uri');
+    	$uri = str_replace(urlencode($item->getVar('item-title')), '%title', $uri);
+    	$uri = str_replace(urlencode($item->getVar('item-decription')), '%description', $uri);
+    	$uri = str_replace(urlencode($item->getVar('item-protocol').$item->getVar('item-domain').$item->getVar('item-referer-uri')), '%url', $uri);
+    	$uri = str_replace(urlencode($item->getVar('feed-protocol').$item->getVar('feed-domain').$item->getVar('feed-referer-uri')), '%feed', $uri);
+    	return $uri;
+    }
+    /**
+     *
+     * @param PingtraxItems $item
+     * @return mixed
+     */
+    function getSitemapURL(PingtraxSitemaps $sitemap)
+    {
+    	$uri = $this->getVar('uri');
+    	$uri = str_replace(urlencode($sitemap->getVar('protocol').$sitemap->getVar('domain').(strlen($sitemap->getVar('baseurl'))>1?((substr($sitemap->getVar('baseurl'),0,1)!="/"?"/":"").$sitemap->getVar('baseurl').(substr($sitemap->getVar('baseurl'),strlen($sitemap->getVar('baseurl'))-1,1)!="/"?"/":"")):"/")).$sitemap->getVar('filename'), '%url', $uri);
+    	return $uri;
+    }
+    
 }
 
 /**
@@ -78,7 +104,12 @@ class PingtraxPings extends XoopsObject
  */
 class PingtraxPingsHandler extends XoopsPersistableObjectHandler
 {
-
+	/**
+	 *
+	 * @var unknown
+	 */
+	var $_configs = array();
+	
 	/**
 	 * var string		URL of JSON Resource for Install
 	 */
@@ -89,6 +120,10 @@ class PingtraxPingsHandler extends XoopsPersistableObjectHandler
      */
     function __construct(&$db)
     {
+    	$moduleHandler = xoops_gethandler('module');
+    	$configHandler = xoops_gethandler('config');
+    	$this->_configs = $configHandler->getConfigList($moduleHandler->getByDirname(basename(dirname(__DIR__)))->getVar('mid'));
+    	 
         parent::__construct($db, "pingtrax_pings", 'PingtraxPings', 'id', 'referer');
         
         $criteria = new Criteria('id',0,"<>");
@@ -117,5 +152,101 @@ class PingtraxPingsHandler extends XoopsPersistableObjectHandler
     	return parent::insert($object, $force);
     }
 
- 
+
+    function makePings($referer = '')
+    {
+    	$this->addTimeLimit(120);
+    	$items_pingsHandler = xoops_getmodulehandler('items_pings', 'pingtrax');
+    	$itemsHandler = xoops_getmodulehandler('items', 'pingtrax');
+    	$criteria = new CriteriaCompo(new Criteria('offline', 0));
+    	if (!empty($referer))
+    		$criteria->add(new Criteria('referer', $referer));
+    	$sleepcriteria = new CriteriaCompo(new Criteria('sleep-till', 0), 'OR');
+    	$sleepcriteria->add(new Criteria('sleep-till', time(), "<="), 'OR');
+    	$criteria->add($sleepcriteria, 'AND');
+    	$criteria->add(new Criteria('type', 'XML-RPC'), 'AND');
+    	foreach($this->getObjects($criteria, true) as $id => $ping)
+    	{
+    		$start = microtime(true);
+    		$criteria = new CriteriaCompo(new Criteria('when', 0));
+    		$criteria->add(new Criteria('ping-referer', $ping->getVar('referer')));
+    		foreach($items_pingsHandler->getObjects($criteria, true) as $piid => $itemping)
+    		{
+    			$item = $itemsHandler->getByReferer($itemping->getVar('item-referer'));
+    			if (is_a($item, "PingtraxItems"))
+    			{
+    				$context = stream_context_create(array('http' => array(
+    						'method' => "POST",
+    						'header' => "Content-Type: text/xml\r\n",
+    						'content' => $item->getPingXML()
+    				)));
+    				$file = @file_get_contents($ping->getPingURL($item), false, $context);
+    				if ($file === false) { 
+    					$ping->setVar('failed-pings', $this->getVar('failed-pings') + 1);
+    					$ping->setVar('failure-time', time());
+    				}
+    				elseif ($file) {
+    					$ping->setVar('successful-pings', $this->getVar('successful-pings') + 1);
+    					$ping->setVar('success-time', time());
+    					$itemping->setVar('when', time());
+    					$items_pingsHandler->insert($itemping, true);
+    				}
+    			
+    			}
+    		}
+    		switch($this->_config['pings_sleep_till'])
+    		{
+	    		case 0:
+	    			$ping->setVar('sleep-till', time() + mt_rand(600, 3600*24));
+	    			break;
+	    		default:
+	    			$ping->setVar('sleep-till', time() + $this->_config['pings_sleep_till']);
+	    			break;
+    		}
+    		$this->insert($ping, true);
+    	}
+	}
+	
+
+	function sendSitemap(PingtraxSitemaps $sitemap)
+	{
+		$this->addTimeLimit(120);
+		$items_pingsHandler = xoops_getmodulehandler('items_pings', 'pingtrax');
+		$itemsHandler = xoops_getmodulehandler('items', 'pingtrax');
+		$criteria = new CriteriaCompo(new Criteria('offline', 0));
+		if (!empty($referer))
+			$criteria->add(new Criteria('referer', $referer));
+		$sleepcriteria = new CriteriaCompo(new Criteria('sleep-till', 0), 'OR');
+		$sleepcriteria->add(new Criteria('sleep-till', time(), "<="), 'OR');
+		$criteria->add($sleepcriteria, 'AND');
+		$criteria->add(new Criteria('type', 'SITEMAPS'), 'AND');
+		foreach($this->getObjects($criteria, true) as $id => $ping)
+		{
+			$start = microtime(true);
+			if (is_a($sitemap, "PingtraxSitemaps"))
+			{
+				$file = @file_get_contents($ping->getSitemapURL($sitemap), false);
+				if ($file === false) {
+					$ping->setVar('failed-pings', $this->getVar('failed-pings') + 1);
+					$ping->setVar('failure-time', time());
+				}
+				elseif ($file) {
+					$ping->setVar('successful-pings', $this->getVar('successful-pings') + 1);
+					$ping->setVar('success-time', time());
+					$itemping->setVar('when', time());
+					$items_pingsHandler->insert($itemping, true);
+				}
+			}
+			switch($this->_config['pings_sleep_till'])
+    		{
+	    		case 0:
+	    			$ping->setVar('sleep-till', time() + mt_rand(600, 3600*24));
+	    			break;
+	    		default:
+	    			$ping->setVar('sleep-till', time() + $this->_config['pings_sleep_till']);
+	    			break;
+    		}
+			$this->insert($ping, true);
+		}
+	}
 }

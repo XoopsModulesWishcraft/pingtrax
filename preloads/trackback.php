@@ -22,30 +22,25 @@
 
 defined('XOOPS_ROOT_PATH') || die('XOOPS root path not defined');
 
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'class' . DIRECTORY_SEPARATOR . 'trackback.php';
+
 /**
  * Class PingtraxTrackbackPreload
  */
 class PingtraxTrackbackPreload extends XoopsPreloadItem
 {
+    
     /**
      * @param $args
-    
-    function eventCoreIncludeFunctionsRedirectheader($args)
+     */
+    function eventCoreFooterEnd($args)
     {
-        $context = stream_context_create(array('http' => array(
-       'method' => "POST",
-       'header' => "Content-Type: text/xml\r\n",
-       'content' => $xml
-   )));
-   $file = @file_get_contents($post_to, false, $context);
-   if ($file === false) { echo '<p>Couldn\'t connect!</p>'; }
-   elseif ($file) {
-       echo '<p>The following response was returned:</p>';
-      echo '<pre>'.htmlspecialchars($file).'</pre>';
-  } else {
-      echo '<p>Empty response!</p>';
-  }
+    	global $pingtraxitem;
+    	if (is_a($pingtraxitem, "PingtraxItems"))
+    	{
+    		$trackback = new PingtraxTrackback($pingtraxitem->getVar('item-title'), $pingtraxitem->getVar('item-author-name'), 'UTF-8');
+    		echo $trackback->rdf_autodiscover(RFC822_from_datetime($pingtraxitem->getVar('created')), $pingtraxitem->getVar('item-title'), $pingtraxitem->getVar('item-description'), $pingtraxitem->getVar('item-protocol').$pingtraxitem->getVar('item-domain').$pingtraxitem->getVar('item-referer-uri'), XOOPS_URL . '/modules/pingtrax/api/' . $pingtraxitem->getVar('referer'), $pingtraxitem->getVar('item-author-name'));
+    	}
     }
- 	*/
    
 }
