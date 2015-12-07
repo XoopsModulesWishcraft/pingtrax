@@ -34,7 +34,7 @@ class PingtraxPingPreload extends XoopsPreloadItem
     function eventCoreFooterEnd($args)
     {
     	$pingsHandler = xoops_getmodulehandler('pings', 'pingtrax');
-    	$pingsHanlder->makePings('');
+    	$pingsHandler->makePings('');
     }
    
 }
