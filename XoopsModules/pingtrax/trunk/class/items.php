@@ -30,6 +30,7 @@
  * 
  * CREATE TABLE `pingtrax_items` (
  *   `id` mediumint(20) NOT NULL AUTO_INCREMENT,
+ *   `parent-id` mediumint(20) NOT NULL DEFAULT '0',
  *   `referer` varchar(44) NOT NULL DEFAULT '',
  *   `type` enum('local','remote','unknown') NOT NULL DEFAULT 'unknown',
  *   `module-dirname` varchar(30) NOT NULL DEFAULT '',
@@ -78,6 +79,7 @@ class PingtraxItems extends XoopsObject
     	
         $this->XoopsObject();
    		$this->initVar('id', XOBJ_DTYPE_INT, null, false);
+   		$this->initVar('parent-id', XOBJ_DTYPE_INT, null, false);
         $this->initVar('referer', XOBJ_DTYPE_OTHER, sha1(NULL), false, 44);
         $this->initVar('type', XOBJ_DTYPE_ENUM, 'unknown', true, false, false, false, array('local','remote','unknown'));
         $this->initVar('module-dirname', XOBJ_DTYPE_OTHER, '', false, 30);
@@ -87,6 +89,7 @@ class PingtraxItems extends XoopsObject
         $this->initVar('module-get', XOBJ_DTYPE_ARRAY, array(), false);
   		$this->initVar('item-author-uid', XOBJ_DTYPE_INT, 0, false);
         $this->initVar('item-author-name', XOBJ_DTYPE_TXTBOX, '', false, 64);
+        $this->initVar('item-category-id', XOBJ_DTYPE_INT, null, false);
         $this->initVar('item-title', XOBJ_DTYPE_TXTBOX, '', false, 180);
         $this->initVar('item-description', XOBJ_DTYPE_TXTBOX, '', false, 250);
         $this->initVar('item-protocol', XOBJ_DTYPE_ENUM, XOOPS_PROT, true, false, false, false, array('https://','http://'));
