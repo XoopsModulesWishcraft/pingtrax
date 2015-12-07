@@ -33,7 +33,7 @@ class PingtraxSitemapPreload extends XoopsPreloadItem
     function eventCoreFooterEnd($args)
     {
     	$sitemapsHandler = xoops_getmodulehandler('sitemaps', 'pingtrax');
-    	$sitemapsHanlder->writeSitemaps('');
+    	$sitemapsHandler->writeSitemaps('');
     }
    
 }
