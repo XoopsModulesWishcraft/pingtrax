@@ -20,6 +20,7 @@
  * @since		1.0.1
  */
 
+include_once XOOPS_ROOT_PATH . '/class/template.php';
 
 /**
  * Class PingtraxSitemaps
@@ -105,5 +106,90 @@ class PingtraxSitemapsHandler extends XoopsPersistableObjectHandler
     	}
     	return parent::insert($object, $force);
     }
- 
+
+    /**
+     *
+     * @param array $array
+     */
+    private function addTimeLimit($seconds = 30)
+    {
+    	global $timelimit;
+    	$timelimit .+ $seconds;
+    	set_time_limit($timelimit);
+    }
+    
+    function writeSitemaps($referer = '')
+    {
+    	$this->addTimeLimit(120);
+    	$items_sitemapsHandler = xoops_getmodulehandler('items_sitemaps', 'pingtrax');
+    	$itemsHandler = xoops_getmodulehandler('items', 'pingtrax');
+    	$criteria = new CriteriaCompo(new Criteria('offline', 0));
+    	if (!empty($referer))
+    		$criteria->add(new Criteria('referer', $referer));
+    	$sleepcriteria = new CriteriaCompo(new Criteria('sleep-till', 0), 'OR');
+    	$sleepcriteria->add(new Criteria('sleep-till', time(), "<="), 'OR');
+    	$criteria->add($sleepcriteria, 'AND');
+    	foreach($this->getObjects($criteria, true) as $id => $sitemap)
+    	{
+    		$write = false;
+    		$start = microtime(true);
+    		$criteria = new CriteriaCompo(new Criteria('map-referer', $sitemap->getVar('referer')));
+    		if ($items_sitemapsHandler->getCount($criteria)>$sitemap->getVar('items'))
+    			$write = true;
+    		$criteria = new Criteria('changed', $sitemap->getVar('written'), ">=");
+    		if ($items_sitemapsHandler->getCount($criteria)>0)
+    			$write = true;
+    		if ($write==true)
+    		{ 		
+    			$sitemap->setVar('written', time());
+    			$sitemapTpl = new XoopsTpl();
+    			$criteria = new CriteriaCompo(new Criteria('map-referer', $sitemap->getVar('referer')));
+    			$criteria->setOrder('`priority`, `chanaged`');
+    			$criteria->setSort('ASC');
+    			foreach($items_sitemapsHandler->getObjects($criteria, true) as $id => $item_sitemap)
+    			{
+    				$item = $itemsHandler->getByReferer($item_sitemap->getVar('item-referer'));
+    				if (is_object($item))
+    				{
+    					$item_sitemap->setVar('when', $sitemap->getVar('written'));
+    					$items_sitemapsHandler->insert($item_sitemap);
+    					$sitemapTpl->append('urls', array(	'loc'=>$item->getVar('item-protocol').$item->getVar('item-domain').$item->getVar('item-referer-uri'),
+    														'lastmod' => date('Y-m-d', $item_sitemap->getVar('changed')),
+    														'changefreq' => $item_sitemap->getVar('frequency'),
+    														'priority' => $item_sitemap->getVar('priority')));
+    				}
+    			}
+    			ob_start();
+    			$sitemapTpl->display(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'sitemaps.xml.html');
+    			if (file_exists($flout = $GLOBALS['xoops']->path("/" . $sitemap->getVar('filename'))))
+    				unlink($flout);
+    			file_put_contents($flout, ob_get_clean());
+    			if (file_exists($flout = $GLOBALS['xoops']->path("/robots.txt")))
+    			{
+    				$robots  = explode(PHP_EOL, file_get_contents($flout));
+    				$found = false;
+    				foreach($robots as $robot)
+    				{
+    					if ($robot == "Sitemap: /".$sitemap->getVar('filename'))
+    						$found = true;
+    				}
+    				if ($found == false) 
+    				{
+    					$data = array();
+    					$data[] = "Sitemap: /".$sitemap->getVar('filename');
+    					foreach($robots as $robot)
+    					{
+    						$data[] = $robot;
+    					}
+    					unlink($flout);
+    					file_put_contents($flout, implode(PHP_EOL, $data));
+    				}
+    			}
+    			
+       		}
+       		$sitemap->setVar('sleep-till', time() + (3600*18));
+       		$this->insert($sitemap, true);
+       		$this->addTimeLimit(microtime(true)-$start+10);
+    	}
+    }
 }
