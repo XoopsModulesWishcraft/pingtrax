@@ -29,23 +29,11 @@ class PingtraxSitemapPreload extends XoopsPreloadItem
 {
     /**
      * @param $args
-    
-    function eventCoreIncludeFunctionsRedirectheader($args)
+     */
+    function eventCoreFooterEnd($args)
     {
-        $context = stream_context_create(array('http' => array(
-       'method' => "POST",
-       'header' => "Content-Type: text/xml\r\n",
-       'content' => $xml
-   )));
-   $file = @file_get_contents($post_to, false, $context);
-   if ($file === false) { echo '<p>Couldn\'t connect!</p>'; }
-   elseif ($file) {
-       echo '<p>The following response was returned:</p>';
-      echo '<pre>'.htmlspecialchars($file).'</pre>';
-  } else {
-      echo '<p>Empty response!</p>';
-  }
+    	$sitemapsHandler = xoops_getmodulehandler('sitemaps', 'pingtrax');
+    	$sitemapsHanlder->writeSitemaps('');
     }
- 	*/
    
 }

@@ -86,12 +86,21 @@ class PingtraxSitemaps extends XoopsObject
  */
 class PingtraxSitemapsHandler extends XoopsPersistableObjectHandler
 {
-
+	/**
+	 *
+	 * @var unknown
+	 */
+	var $_configs = array();
+	
     /**
      * @param null|object $db
      */
     function __construct(&$db)
     {
+    	$moduleHandler = xoops_gethandler('module');
+    	$configHandler = xoops_gethandler('config');
+    	$this->_configs = $configHandler->getConfigList($moduleHandler->getByDirname(basename(dirname(__DIR__)))->getVar('mid'));
+    	 
         parent::__construct($db, "pingtrax_sitemaps", 'PingtraxSitemaps', 'id', 'referer');
     }
 
@@ -122,6 +131,7 @@ class PingtraxSitemapsHandler extends XoopsPersistableObjectHandler
     {
     	$this->addTimeLimit(120);
     	$items_sitemapsHandler = xoops_getmodulehandler('items_sitemaps', 'pingtrax');
+    	$pingsHandler = xoops_getmodulehandler('pings', 'pingtrax');
     	$itemsHandler = xoops_getmodulehandler('items', 'pingtrax');
     	$criteria = new CriteriaCompo(new Criteria('offline', 0));
     	if (!empty($referer))
@@ -185,10 +195,18 @@ class PingtraxSitemapsHandler extends XoopsPersistableObjectHandler
     					file_put_contents($flout, implode(PHP_EOL, $data));
     				}
     			}
-    			
        		}
-       		$sitemap->setVar('sleep-till', time() + (3600*18));
+    		switch($this->_config['sitemaps_sleep_till'])
+    		{
+	    		case 0:
+	    			$sitemap->setVar('sleep-till', time() + mt_rand(600, 3600*24));
+	    			break;
+	    		default:
+	    			$sitemap->setVar('sleep-till', time() + $this->_config['sitemaps_sleep_till']);
+	    			break;
+    		}
        		$this->insert($sitemap, true);
+       		$pingsHandler->sendSitemap($sitemap);
        		$this->addTimeLimit(microtime(true)-$start+10);
     	}
     }

@@ -108,16 +108,6 @@ CREATE TABLE `pingtrax_pings` (
   KEY `CHRONOLOGISTICS` (`id`,`referer`,`created`,`updated`,`offlined`,`failure-time`,`success-time`,`sleep-till`) USING BTREE KEY_BLOCK_SIZE=128
 ) ENGINE=InnoDB AUTO_INCREMENT=150 DEFAULT CHARSET=utf8 PACK_KEYS=1 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC KEY_BLOCK_SIZE=16;
 
-CREATE TABLE `pingtrax_pings_sitemaps` (
-  `id` mediumint(32) NOT NULL AUTO_INCREMENT,
-  `map-referer` varchar(44) NOT NULL DEFAULT '',
-  `ping-referer` varchar(44) NOT NULL DEFAULT '',
-  `when` int(12) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  KEY `SEARCH` (`id`,`map-referer`,`ping-referer`) USING BTREE,
-  KEY `CHRONOLOGISTICS` (`map-referer`,`ping-referer`,`when`) USING BTREE KEY_BLOCK_SIZE=64
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 PACK_KEYS=1 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC KEY_BLOCK_SIZE=8;
-
 CREATE TABLE `pingtrax_sitemaps` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `referer` varchar(44) NOT NULL DEFAULT '',
