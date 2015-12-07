@@ -28,8 +28,8 @@ $modversion['description']    = _MI_PINGTRAX_DESC;
 $modversion['author']         = "Simon Antony Roberts";
 $modversion['credits']        = "Chronolabs";
 $modversion['help']           = 'page=help';
-$modversion['license']        = 'GNU GPL 2.0 or later';
-$modversion['license_url']    = "www.gnu.org/licenses/gpl-2.0.html/";
+$modversion['license']        = 'GNU GPL 3.0 or later';
+$modversion['license_url']    = "labs.coop/briefs/legal/general-public-licence/13,3.html";
 $modversion['image']          = "images/logo.png";
 $modversion['dirname']        = basename(__DIR__);
 $modversion['dirmoduleadmin'] = '/Frameworks/moduleclasses/moduleadmin';
@@ -37,8 +37,8 @@ $modversion['icons16']        = '../../Frameworks/moduleclasses/icons/16';
 $modversion['icons32']        = '../../Frameworks/moduleclasses/icons/32';
 
 //about
-$modversion["module_status"]       = "Alpha";
-$modversion['release_date']        = '2015/12/01';
+$modversion["module_status"]       = "Beta";
+$modversion['release_date']        = '2015/12/08';
 $modversion["module_website_url"]  = "http://labs.coop/";
 $modversion["module_website_name"] = "Chronolabs";
 $modversion['min_php']             = '5.3.7';
