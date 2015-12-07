@@ -46,6 +46,26 @@ class PingtraxPingPreload extends XoopsPreloadItem
       echo '<p>Empty response!</p>';
   }
     }
+    
+    
+1.   <?xml version="1.0"?>
+2.   <methodCall>
+3.     <methodName>weblogUpdates.extendedPing</methodName>
+4.     <params>
+5.       <param>
+6.         <value>Example Blog</value>
+7.       </param>
+8.       <param>
+9.         <value>http://www.example.com/blog/</value>
+10.      </param>
+11.      <param>
+12.        <value>http://www.example.com/blog/new-post.html</value>
+13.      </param>
+14.      <param>
+15.        <value>http://www.example.com/blog/feed.xml</value>
+16.      </param>
+17.    </params>
+18.  </methodCall>
  	*/
    
 }

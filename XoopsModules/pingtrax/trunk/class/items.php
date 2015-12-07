@@ -125,6 +125,29 @@ class PingtraxItemsHandler extends XoopsPersistableObjectHandler
     			else 
     				return false;
     		}
+    		$sitemapsHandler = xoops_getmodulehandler('sitemaps', 'pingtrax');
+    		$criteria = new CriteriaCompo(new Criteria('protocol', XOOPS_PROT));
+    		$criteria->add(new Criteria('domain', parse_url(XOOPS_URL, PHP_URL_HOST)));
+    		$criteria->add(new Criteria('baseurl', parse_url(XOOPS_URL, PHP_URL_PATH)));
+    		if ($sitemapsHandler->getCount($criteria)==0)
+    		{
+    			$sitemap = $sitemapsHandler->create();
+    			$sitemap->setVar('referer', md5(XOOPS_URL.microtime(true).XOOPS_DB_USER.XOOPS_DB_PASS));
+    			$sitemap->setVar('protocol', XOOPS_PROT);
+    			$sitemap->setVar('domain', parse_url(XOOPS_URL, PHP_URL_HOST));
+    			$sitemap->setVar('baseurl', parse_url(XOOPS_URL, PHP_URL_PATH));
+    			$sitemap->setVar('filename', 'sitemap.'.str_replace("://", "", XOOPS_PROT) . "." . parse_url(XOOPS_URL, PHP_URL_HOST) . '.xml');
+    			$sitemap = $sitemapsHandler->get($sitemap = $sitemapsHandler->insert($sitemap, true));
+    		} else {
+    			$obj = $sitemapsHandler->getObjects($criteria, false);
+    			if (is_object($obj[0]))
+    				$sitemap = $obj[0];
+    		}
+    		$items_sitemapsHandler = xoops_getmodulehandler('items_sitemaps', 'pingtrax');
+    		$itemsitemap = $items_sitemapsHandler->create();
+    		$itemsitemap->setVar('map-referer', $sitemap->getVar('referer'));
+    		$itemsitemap->setVar('item-referer', $object->getVar('referer'));
+    		$items_sitemapsHandler->insert($itemsitemap, true);
     	} else {
     		$object->setVar('updated', time());
     	}
@@ -152,4 +175,15 @@ class PingtraxItemsHandler extends XoopsPersistableObjectHandler
     	return parent::insert($object, $force);
     }
  
+    function getByReferer($referer = '')
+    {
+    	$criteria = new CriteriaCompo(new Criteria('referer', $referer));
+    	$criteria->add(new Criteria('offline', 0));
+    	if ($this->getCount($criteria)==0)
+    		return NULL;
+    	$objs = $this->getObjects($criteria, false);
+    	if (isset($objs[0]) && is_a($objs[0], "PingtraxItems"))
+    		return $objs[0];
+    	return NULL;
+    }
 }
