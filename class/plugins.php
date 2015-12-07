@@ -385,6 +385,55 @@ class PingtraxPluginsHandler extends XoopsPersistableObjectHandler
 		parent::__construct($db);
 	}
 
+
+	function getRemoteObject(PingtraxItems $item, $url = '', $name = '', $subject = '', $comment = '')
+	{
+		$ret = array();
+		
+		if (file_exists($file = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . ($dirname = $item->getVar('module-dirname')) . '.php'))
+		{
+			require_once $file;
+		} elseif (file_exists($file = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'plugins' . DIRECTORY_SEPARATOR . ($dirname = $this->_default) . '.php'))
+		{
+			require_once $file;
+		}
+	
+		if (class_exists($class = "PingtraxPlugins".ucfirst(strtolower($dirname))) && empty($this->_plugins[$dirname]))
+		{
+			$this->_plugins[$dirname] = new $class();
+		}
+		if (is_object($this->_plugins[$dirname]))
+		{
+			$ret['type'] = 'remote';
+			$ret['module-dirname'] = 'pingtrax';
+			$ret['module-class'] = 'items';
+			$ret['module-item-id'] = $item->getVar('id');
+			$ret['parent-id'] = $item->getVar('id');
+			$ret['item-author-name'] = $name;
+			$ret['item-title'] = $subject;
+			$ret['item-description'] = $comment;
+			$ret['module-php-self'] = $this->_plugins[$dirname]->getModulePHPSelf();
+			$ret['module-get'] = $this->_plugins[$dirname]->getModuleGet();
+			$ret['item-category-id'] = $this->_plugins[$dirname]->getItemCategoryID();
+			$ret['item-protocol'] = $this->_plugins[$dirname]->getItemProtocol();
+			$ret['item-domain'] = $this->_plugins[$dirname]->getItemDomain();
+			$ret['item-referer-uri'] = $this->_plugins[$dirname]->getItemRefererURI();
+			$ret['feed-protocol'] = $this->_plugins[$dirname]->getFeedProtocol();
+			$ret['feed-domain'] = $this->_plugins[$dirname]->getFeedDomain();
+			$ret['feed-referer-uri'] = $this->_plugins[$dirname]->getFeedRefererURI();
+			$ret['item-php-self'] = $this->_plugins[$dirname]->getItemPHPSelf();
+			$ret['referer'] = $this->getReferer($ret);
+		}
+		if (!empty($ret))
+		{
+			$itemsHandler = xoops_getmodulehandler('items', 'pingtrax');
+			$item = $itemsHandler->create(true);
+			$item->setVars($ret);
+			$ret = $itemsHandler->get($itemsHandler->insert($item));
+		}
+		return $ret;
+	}
+	
 	function getItemObject()
 	{
 		$ret = array();

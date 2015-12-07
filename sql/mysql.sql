@@ -1,6 +1,7 @@
 
 CREATE TABLE `pingtrax_items` (
   `id` mediumint(20) NOT NULL AUTO_INCREMENT,
+  `parent-id` mediumint(20) NOT NULL DEFAULT '0'
   `referer` varchar(44) NOT NULL DEFAULT '',
   `type` enum('local','remote','unknown') NOT NULL DEFAULT 'unknown',
   `module-dirname` varchar(30) NOT NULL DEFAULT '',
@@ -10,7 +11,6 @@ CREATE TABLE `pingtrax_items` (
   `module-get` tinytext,
   `item-author-uid` int(13) NOT NULL DEFAULT '0',
   `item-author-name` varchar(64) NOT NULL DEFAULT '',
-  `item-id` int(20) NOT NULL DEFAULT '0',
   `item-category-id` int(20) NOT NULL DEFAULT '0',
   `item-title` varchar(180) NOT NULL DEFAULT '',
   `item-description` varchar(250) NOT NULL DEFAULT '',
