@@ -56,7 +56,7 @@ switch ($op)
 						$last = array();
 			} else
 				$last = array();
-			$GLOBALS['xoopsTpl']->append('pings', array('id' => $ping->getVar('id'), 'type' => $ping->getVar('type'), 'uri' => $ping->getVar('uri'), 'last' => $last, "successes" => number_format($ping->getVar('successful-pings'), 0), "failures" => number_format($ping->getVar('failed-pings'), 0), 'success' => ($ping->getVar('success-time')!=0?date("Y-m-d H:i:s", $ping->getVar('success-time')):""), 'failed' => ($ping->getVar('failure-time')!=0?date("Y-m-d H:i:s", $ping->getVar('failure-time')):""), 'sleeptill' => ($ping->getVar('sleep-till')!=0?date("Y-m-d H:i:s", $ping->getVar('sleep-till')):"")));
+			$GLOBALS['xoopsTpl']->append('pings', array('id' => $ping->getVar('id'), 'type' => $ping->getVar('type'), 'uri' => $ping->getVar('uri'), 'last' => $last, "successes" => number_format($ping->getVar('successful-pings'), 0), "failures" => number_format($ping->getVar('failed-pings'), 0), 'success' => ($ping->getVar('success-time')!=0?date("Y-m-d H:i:s", $ping->getVar('success-time')):"---"), 'failed' => ($ping->getVar('failure-time')!=0?date("Y-m-d H:i:s", $ping->getVar('failure-time')):"---"), 'sleeptill' => ($ping->getVar('sleep-till')!=0?date("Y-m-d H:i:s", $ping->getVar('sleep-till')):"---")));
 		}
 		
 		$pagenav = new XoopsPageNav($total, $num, $start, 'start', "&num=$num");

@@ -185,13 +185,13 @@ class PingtraxPingsHandler extends XoopsPersistableObjectHandler
     	$this->addTimeLimit(120);
     	$items_pingsHandler = xoops_getmodulehandler('items_pings', 'pingtrax');
     	$itemsHandler = xoops_getmodulehandler('items', 'pingtrax');
-    	$criteria = new CriteriaCompo(new Criteria('offlined', 0));
+    	$criteria = new CriteriaCompo(new Criteria('`offlined`', 0));
     	if (!empty($referer))
-    		$criteria->add(new Criteria('referer', $referer));
-    	$sleepcriteria = new CriteriaCompo(new Criteria('sleep-till', 0), 'OR');
-    	$sleepcriteria->add(new Criteria('sleep-till', time(), "<="), 'OR');
+    		$criteria->add(new Criteria('`referer`', $referer));
+    	$sleepcriteria = new CriteriaCompo(new Criteria('`sleep-till`', 0), 'OR');
+    	$sleepcriteria->add(new Criteria('`sleep-till`', time(), "<="), 'OR');
     	$criteria->add($sleepcriteria, 'AND');
-    	$criteria->add(new Criteria('type', 'XML-RPC'), 'AND');
+    	$criteria->add(new Criteria('`type`', 'XML-RPC'), 'AND');
     	foreach($this->getObjects($criteria, true) as $id => $ping)
     	{
     		$start = microtime(true);
@@ -244,13 +244,13 @@ class PingtraxPingsHandler extends XoopsPersistableObjectHandler
 		$this->addTimeLimit(120);
 		$items_pingsHandler = xoops_getmodulehandler('items_pings', 'pingtrax');
 		$itemsHandler = xoops_getmodulehandler('items', 'pingtrax');
-		$criteria = new CriteriaCompo(new Criteria('offlined', 0));
+		$criteria = new CriteriaCompo(new Criteria('`offlined`', 0));
 		if (!empty($referer))
-			$criteria->add(new Criteria('referer', $referer));
-		$sleepcriteria = new CriteriaCompo(new Criteria('sleep-till', 0), 'OR');
-		$sleepcriteria->add(new Criteria('sleep-till', time(), "<="), 'OR');
+			$criteria->add(new Criteria('`referer`', $referer));
+		$sleepcriteria = new CriteriaCompo(new Criteria('`sleep-till`', 0), 'OR');
+		$sleepcriteria->add(new Criteria('`sleep-till`', time(), "<="), 'OR');
 		$criteria->add($sleepcriteria, 'AND');
-		$criteria->add(new Criteria('type', 'SITEMAPS'), 'AND');
+		$criteria->add(new Criteria('`type`', 'SITEMAPS'), 'AND');
 		foreach($this->getObjects($criteria, true) as $id => $ping)
 		{
 			$start = microtime(true);
@@ -286,8 +286,8 @@ class PingtraxPingsHandler extends XoopsPersistableObjectHandler
 	 */	
 	function getCountPinglists()
 	{
-		$criteria = new CriteriaCompo(new Criteria('offlined', 0));
-		$criteria->add(new Criteria('type', 'XML-RPC'));
+		$criteria = new CriteriaCompo(new Criteria('`offlined`', 0));
+		$criteria->add(new Criteria('`type`', 'XML-RPC'));
 		return $this->getCount($criteria);
 	}
 	
@@ -308,7 +308,7 @@ class PingtraxPingsHandler extends XoopsPersistableObjectHandler
 	{
 		$sql = "SELECT sum(`successful-pings`) as `Successes` FROM `" . $this->db->prefix($this->table) . "` WHERE `offlined` = 0";
 		list($sum) = $this->db->fetchRow($this->db->queryF($sql));
-		return $sum;
+		return (empty($sum)?'0':$sum);
 	}
 	
 	/**
@@ -318,7 +318,7 @@ class PingtraxPingsHandler extends XoopsPersistableObjectHandler
 	{
 		$sql = "SELECT sum(`failed-pings`) as `Failures` FROM `" . $this->db->prefix($this->table) . "` WHERE `offlined` = 0";
 		list($sum) = $this->db->fetchRow($this->db->queryF($sql));
-		return $sum;
+		return (empty($sum)?'0':$sum);
 	}
 	
 	/**
@@ -331,7 +331,7 @@ class PingtraxPingsHandler extends XoopsPersistableObjectHandler
 	{
 		$sql = "SELECT `success-time` FROM `" . $this->db->prefix($this->table) . "` WHERE `offlined` = 0 ORDER BY `success-time` DESC LIMIT 1";
 		list($date) = $this->db->fetchRow($this->db->queryF($sql));
-		return ($date!=0?date($format, $date):"");
+		return ($date!=0?date($format, $date):"---");
 	}
 	
 	/**
@@ -344,6 +344,6 @@ class PingtraxPingsHandler extends XoopsPersistableObjectHandler
 	{
 		$sql = "SELECT `failure-time` FROM `" . $this->db->prefix($this->table) . "` WHERE `offlined` = 0 ORDER BY `failure-time` DESC LIMIT 1";
 		list($date) = $this->db->fetchRow($this->db->queryF($sql));
-		return ($date!=0?date($format, $date):"");
+		return ($date!=0?date($format, $date):"---");
 	}
 }
