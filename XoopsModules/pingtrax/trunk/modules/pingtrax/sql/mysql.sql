@@ -1,7 +1,7 @@
 
 CREATE TABLE `pingtrax_items` (
   `id` mediumint(20) NOT NULL AUTO_INCREMENT,
-  `parent-id` mediumint(20) NOT NULL DEFAULT '0'
+  `parent-id` mediumint(20) NOT NULL DEFAULT '0',
   `referer` varchar(44) NOT NULL DEFAULT '',
   `type` enum('local','remote','unknown') NOT NULL DEFAULT 'unknown',
   `module-dirname` varchar(30) NOT NULL DEFAULT '',
@@ -106,7 +106,7 @@ CREATE TABLE `pingtrax_pings` (
   PRIMARY KEY (`id`,`referer`,`type`,`uri`),
   KEY `SEARCH` (`referer`,`type`,`uri`,`last-item-referer`,`successful-pings`,`failed-pings`,`id`) USING BTREE,
   KEY `CHRONOLOGISTICS` (`id`,`referer`,`created`,`updated`,`offlined`,`failure-time`,`success-time`,`sleep-till`) USING BTREE KEY_BLOCK_SIZE=128
-) ENGINE=InnoDB AUTO_INCREMENT=150 DEFAULT CHARSET=utf8 PACK_KEYS=1 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB AUTO_INCREMENT=1024 DEFAULT CHARSET=utf8 PACK_KEYS=1 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC KEY_BLOCK_SIZE=16;
 
 CREATE TABLE `pingtrax_sitemaps` (
   `id` int(10) NOT NULL AUTO_INCREMENT,

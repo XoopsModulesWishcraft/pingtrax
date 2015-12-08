@@ -62,7 +62,11 @@ $modversion['adminmenu']  = "admin/menu.php";
 $modversion['sqlfile']['mysql'] = "sql/mysql.sql";
 
 // Table
-$modversion['tables']	=	json_decode(file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . "sql" . DIRECTORY_SEPARATOR . "tables.json"), true);
+$modversion['tables'][]	=	'pingtrax_items';
+$modversion['tables'][]	=	'pingtrax_items_pings';
+$modversion['tables'][]	=	'pingtrax_items_sitemaps';
+$modversion['tables'][]	=	'pingtrax_pings';
+$modversion['tables'][]	=	'pingtrax_sitemaps';
 
 // Scripts to run upon installation or update
 $modversion['onInstall'] = "include/install.php";
@@ -94,9 +98,9 @@ $modversion['config'][] = array(
 		'description' => '_MI_PINGTRAX_PINGS_SLEEP_TILL_DESC',
 		'formtype'    => 'select',
 		'valuetype'   => 'int',
-		'options'	  => array(	0 => _MI_PINGTRAX_TIME_RANDOM, 900 => _MI_PINGTRAX_TIME_15M, 1800 => _MI_PINGTRAX_TIME_30M, 3600 => _MI_PINGTRAX_TIME_1HR, (3600*2) => _MI_PINGTRAX_TIME_2HR, (3600*3) => _MI_PINGTRAX_TIME_3HR,
-								(3600*4) => _MI_PINGTRAX_TIME_4HR, (3600*5) => _MI_PINGTRAX_TIME_5HR, (3600*6) => _MI_PINGTRAX_TIME_6HR, (3600*7) => _MI_PINGTRAX_TIME_7HR, (3600*8) => _MI_PINGTRAX_TIME_8HR, (3600*9) => _MI_PINGTRAX_TIME_9HR,
-								(3600*10) => _MI_PINGTRAX_TIME_10HR, (3600*11) => _MI_PINGTRAX_TIME_11HR, (3600*12) => _MI_PINGTRAX_TIME_12HR, (3600*14) => _MI_PINGTRAX_TIME_14HR, (3600*16) => _MI_PINGTRAX_TIME_16HR, (3600*24) => _MI_PINGTRAX_TIME_24HR),
+		'options'	  => array(_MI_PINGTRAX_TIME_RANDOM => 0, _MI_PINGTRAX_TIME_15M => 900, _MI_PINGTRAX_TIME_30M => 1800, _MI_PINGTRAX_TIME_1HR => 3600, _MI_PINGTRAX_TIME_2HR => (3600*2), _MI_PINGTRAX_TIME_3HR =>(3600*3),
+							   _MI_PINGTRAX_TIME_4HR => (3600*4), _MI_PINGTRAX_TIME_5HR => (3600*5), _MI_PINGTRAX_TIME_6HR => (3600*6), _MI_PINGTRAX_TIME_7HR => (3600*7), _MI_PINGTRAX_TIME_8HR => (3600*8), _MI_PINGTRAX_TIME_9HR => (3600*9),
+							   _MI_PINGTRAX_TIME_10HR => (3600*10), _MI_PINGTRAX_TIME_11HR => (3600*11), _MI_PINGTRAX_TIME_12HR => (3600*12), _MI_PINGTRAX_TIME_14HR => (3600*14), _MI_PINGTRAX_TIME_16HR =>(3600*16), _MI_PINGTRAX_TIME_24HR =>(3600*24)),
 		'default'     => 3600 * mt_rand(1,12)
 );
 
@@ -106,9 +110,9 @@ $modversion['config'][] = array(
 		'description' => '_MI_PINGTRAX_SITEMAPS_SLEEP_TILL_DESC',
 		'formtype'    => 'select',
 		'valuetype'   => 'int',
-		'options'	  => array(	0 => _MI_PINGTRAX_TIME_RANDOM, 900 => _MI_PINGTRAX_TIME_15M, 1800 => _MI_PINGTRAX_TIME_30M, 3600 => _MI_PINGTRAX_TIME_1HR, (3600*2) => _MI_PINGTRAX_TIME_2HR, (3600*3) => _MI_PINGTRAX_TIME_3HR, 
-								(3600*4) => _MI_PINGTRAX_TIME_4HR, (3600*5) => _MI_PINGTRAX_TIME_5HR, (3600*6) => _MI_PINGTRAX_TIME_6HR, (3600*7) => _MI_PINGTRAX_TIME_7HR, (3600*8) => _MI_PINGTRAX_TIME_8HR, (3600*9) => _MI_PINGTRAX_TIME_9HR,
-								(3600*10) => _MI_PINGTRAX_TIME_10HR, (3600*11) => _MI_PINGTRAX_TIME_11HR, (3600*12) => _MI_PINGTRAX_TIME_12HR, (3600*14) => _MI_PINGTRAX_TIME_14HR, (3600*16) => _MI_PINGTRAX_TIME_16HR, (3600*24) => _MI_PINGTRAX_TIME_24HR),
+		'options'	  => array(_MI_PINGTRAX_TIME_RANDOM => 0, _MI_PINGTRAX_TIME_15M => 900, _MI_PINGTRAX_TIME_30M => 1800, _MI_PINGTRAX_TIME_1HR => 3600, _MI_PINGTRAX_TIME_2HR => (3600*2), _MI_PINGTRAX_TIME_3HR =>(3600*3),
+							   _MI_PINGTRAX_TIME_4HR => (3600*4), _MI_PINGTRAX_TIME_5HR => (3600*5), _MI_PINGTRAX_TIME_6HR => (3600*6), _MI_PINGTRAX_TIME_7HR => (3600*7), _MI_PINGTRAX_TIME_8HR => (3600*8), _MI_PINGTRAX_TIME_9HR => (3600*9),
+							   _MI_PINGTRAX_TIME_10HR => (3600*10), _MI_PINGTRAX_TIME_11HR => (3600*11), _MI_PINGTRAX_TIME_12HR => (3600*12), _MI_PINGTRAX_TIME_14HR => (3600*14), _MI_PINGTRAX_TIME_16HR =>(3600*16), _MI_PINGTRAX_TIME_24HR =>(3600*24)),
 		'default'     => 3600 * mt_rand(1,12)
 );
 
