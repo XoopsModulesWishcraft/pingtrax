@@ -51,7 +51,7 @@
 class PingtraxPings extends XoopsObject
 {
     /**
-     *
+     * Constructor
      */
     function __construct()
     {
@@ -68,13 +68,14 @@ class PingtraxPings extends XoopsObject
         $this->initVar('failure-time', XOBJ_DTYPE_INT, 0, false);
         $this->initVar('created', XOBJ_DTYPE_INT, 0, false);
         $this->initVar('updated', XOBJ_DTYPE_INT, 0, false);
-        $this->initVar('offline', XOBJ_DTYPE_INT, 0, false);
+        $this->initVar('offlined', XOBJ_DTYPE_INT, 0, false);
     }
 
     /**
+     * Gets Pinglist Item URL
      * 
      * @param PingtraxItems $item
-     * @return mixed
+     * @return string
      */
     function getPingURL(PingtraxItems $item)
     {
@@ -85,10 +86,12 @@ class PingtraxPings extends XoopsObject
     	$uri = str_replace(urlencode($item->getVar('feed-protocol').$item->getVar('feed-domain').$item->getVar('feed-referer-uri')), '%feed', $uri);
     	return $uri;
     }
+    
     /**
-     *
+     * Gets Pinglist Sitemap URL
+     * 
      * @param PingtraxItems $item
-     * @return mixed
+     * @return string
      */
     function getSitemapURL(PingtraxSitemaps $sitemap)
     {
@@ -116,6 +119,8 @@ class PingtraxPingsHandler extends XoopsPersistableObjectHandler
 	var $_resource 	=	"https://sourceforge.net/p/xoops/svn/HEAD/tree/XoopsModules/pingtrax/data/ping-resources.json?format=raw";
 	
     /**
+     * Constructor
+     * 
      * @param null|object $db
      */
     function __construct(&$db)
@@ -141,6 +146,24 @@ class PingtraxPingsHandler extends XoopsPersistableObjectHandler
         }
     }
     
+    /**
+     * Set's Offline Tag to Delete Record
+     * 
+     * {@inheritDoc}
+     * @see XoopsPersistableObjectHandler::delete()
+     */
+    function delete($object = NULL)
+    {
+    	$object->setVar('offlined', time());
+    	return $this->insert($object, true)>0?true:false;
+    }
+
+    /**
+     * Insert a Record
+     * 
+     * {@inheritDoc}
+     * @see XoopsPersistableObjectHandler::insert()
+     */
     function insert($object = NULL, $force = true)
     {
     	if ($object->isNew())
@@ -152,13 +175,17 @@ class PingtraxPingsHandler extends XoopsPersistableObjectHandler
     	return parent::insert($object, $force);
     }
 
-
+    /**
+     * Makes Pings for Pinglists
+     * 
+     * @param string $referer
+     */
     function makePings($referer = '')
     {
     	$this->addTimeLimit(120);
     	$items_pingsHandler = xoops_getmodulehandler('items_pings', 'pingtrax');
     	$itemsHandler = xoops_getmodulehandler('items', 'pingtrax');
-    	$criteria = new CriteriaCompo(new Criteria('offline', 0));
+    	$criteria = new CriteriaCompo(new Criteria('offlined', 0));
     	if (!empty($referer))
     		$criteria->add(new Criteria('referer', $referer));
     	$sleepcriteria = new CriteriaCompo(new Criteria('sleep-till', 0), 'OR');
@@ -207,13 +234,17 @@ class PingtraxPingsHandler extends XoopsPersistableObjectHandler
     	}
 	}
 	
-
+	/**
+	 * sends Sitemap to Pinglist supporting sitemap
+	 * 
+	 * @param PingtraxSitemaps $sitemap
+	 */
 	function sendSitemap(PingtraxSitemaps $sitemap)
 	{
 		$this->addTimeLimit(120);
 		$items_pingsHandler = xoops_getmodulehandler('items_pings', 'pingtrax');
 		$itemsHandler = xoops_getmodulehandler('items', 'pingtrax');
-		$criteria = new CriteriaCompo(new Criteria('offline', 0));
+		$criteria = new CriteriaCompo(new Criteria('offlined', 0));
 		if (!empty($referer))
 			$criteria->add(new Criteria('referer', $referer));
 		$sleepcriteria = new CriteriaCompo(new Criteria('sleep-till', 0), 'OR');
@@ -248,5 +279,71 @@ class PingtraxPingsHandler extends XoopsPersistableObjectHandler
     		}
 			$this->insert($ping, true);
 		}
+	}
+	
+	/**
+	 * Gets number of Pinglist's
+	 */	
+	function getCountPinglists()
+	{
+		$criteria = new CriteriaCompo(new Criteria('offlined', 0));
+		$criteria->add(new Criteria('type', 'XML-RPC'));
+		return $this->getCount($criteria);
+	}
+	
+	/**
+	 * Gets number of Sitemaps
+	 */
+	function getCountSitemaps()
+	{
+		$criteria = new CriteriaCompo(new Criteria('offlined', 0));
+		$criteria->add(new Criteria('type', 'SITEMAPS'));
+		return $this->getCount($criteria);
+	}
+	
+	/**
+	 * Gets Sum of Successes of Pinglist/Sitemaps
+	 */
+	function getSumSuccessful()
+	{
+		$sql = "SELECT sum(`successful-pings`) as `Successes` FROM `" . $this->db->prefix($this->table) . "` WHERE `offlined` = 0";
+		list($sum) = $this->db->fetchRow($this->db->queryF($sql));
+		return $sum;
+	}
+	
+	/**
+	 * Gets Sum of Failures of Pinglist/Sitemaps
+	 */
+	function getSumFailures()
+	{
+		$sql = "SELECT sum(`failed-pings`) as `Failures` FROM `" . $this->db->prefix($this->table) . "` WHERE `offlined` = 0";
+		list($sum) = $this->db->fetchRow($this->db->queryF($sql));
+		return $sum;
+	}
+	
+	/**
+	 * Gets Last Date Ping/Sitemap was Successful
+	 * 
+	 * @param string $format
+	 * @return string
+	 */
+	function getLastSuccessDate($format = 'Y-m-d H:i:s')
+	{
+		$sql = "SELECT `success-time` FROM `" . $this->db->prefix($this->table) . "` WHERE `offlined` = 0 ORDER BY `success-time` DESC LIMIT 1";
+		list($date) = $this->db->fetchRow($this->db->queryF($sql));
+		return ($date!=0?date($format, $date):"");
+	}
+	
+	/**
+	 * Gets Last Date Ping/Sitemap Failed
+	 * 
+	 * @param string $format
+	 * @return string
+	 */
+	function getLastFailedDate($format = 'Y-m-d H:i:s')
+	{
+		$sql = "SELECT `failure-time` FROM `" . $this->db->prefix($this->table) . "` WHERE `offlined` = 0 ORDER BY `failure-time` DESC LIMIT 1";
+		list($date) = $this->db->fetchRow($this->db->queryF($sql));
+		return ($date!=0?date($format, $date):"");
 	}
 }

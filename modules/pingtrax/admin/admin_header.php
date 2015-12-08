@@ -25,6 +25,7 @@ $path = dirname(dirname(dirname(dirname(__FILE__))));
 include_once $path . '/mainfile.php';
 include_once $path . '/include/cp_functions.php';
 require_once $path . '/include/cp_header.php';
+require_once $path . '/class/pagenav.php';
 
 global $xoopsModule;
 

@@ -23,7 +23,23 @@
 include_once dirname(__FILE__) . '/admin_header.php';
 xoops_cp_header();
 
+
+$pingsHandler = xoops_getmodulehandler('pings', 'pingtrax');
+$itemsHandler = xoops_getmodulehandler('items', 'pingtrax');
+
 $indexAdmin = new ModuleAdmin();
+
+$indexAdmin->addInfoBox(_AM_PINGTRAX_STATISTICS);
+
+$indexAdmin->addInfoBoxLine(_AM_PINGTRAX_STATISTICS, "<label>"._AM_PINGTRAX_STATISTICS_PINGLISTS."</label>", $pingsHandler->getCountPinglists(), 'Green');
+$indexAdmin->addInfoBoxLine(_AM_PINGTRAX_STATISTICS, "<label>"._AM_PINGTRAX_STATISTICS_SITEMAPS."</label>", $pingsHandler->getCountSitemaps(), 'Green');
+$indexAdmin->addInfoBoxLine(_AM_PINGTRAX_STATISTICS, "<label>"._AM_PINGTRAX_STATISTICS_PINGSUCCESS."</label>", $pingsHandler->getSumSuccessful(), 'Green');
+$indexAdmin->addInfoBoxLine(_AM_PINGTRAX_STATISTICS, "<label>"._AM_PINGTRAX_STATISTICS_PINGFAILURES."</label>", $pingsHandler->getSumFailures(), 'Green');
+$indexAdmin->addInfoBoxLine(_AM_PINGTRAX_STATISTICS, "<label>"._AM_PINGTRAX_STATISTICS_PINGLASTSUCCESS."</label>", $pingsHandler->getLastSuccessDate('Y-m-d H:i:s'), 'Purple');
+$indexAdmin->addInfoBoxLine(_AM_PINGTRAX_STATISTICS, "<label>"._AM_PINGTRAX_STATISTICS_PINGLASTFAILED."</label>", $pingsHandler->getLastFailedDate('Y-m-d H:i:s'), 'Red');
+$indexAdmin->addInfoBoxLine(_AM_PINGTRAX_STATISTICS, "<label>"._AM_PINGTRAX_STATISTICS_URISADMIN."</label>", $itemsHandler->getCount(new Criteria('user-session', 'admin')), 'Blue');
+$indexAdmin->addInfoBoxLine(_AM_PINGTRAX_STATISTICS, "<label>"._AM_PINGTRAX_STATISTICS_URISUSERS."</label>", $itemsHandler->getCount(new Criteria('user-session', 'user')), 'Blue');
+$indexAdmin->addInfoBoxLine(_AM_PINGTRAX_STATISTICS, "<label>"._AM_PINGTRAX_STATISTICS_URISGUEST."</label>", $itemsHandler->getCount(new Criteria('user-session', 'guest')), 'Blue');
 
 echo $indexAdmin->addNavigation('admin.php');
 echo $indexAdmin->renderIndex();

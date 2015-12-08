@@ -47,3 +47,7 @@ define('_MI_PINGTRAX_TIME_14HR', '14 Hours');
 define('_MI_PINGTRAX_TIME_16HR', '16 Hours');
 define('_MI_PINGTRAX_TIME_24HR', '24 Hours');
 		
+// Admin Menus
+define('_MI_PINGTRAX_DASHBOARD', 'PingTrax Dashboard');
+define('_MI_PINGTRAX_PINGS', 'Pinglist\'s/Sitemap\'s');
+define('_MI_PINGTRAX_ABOUT', 'About PingTrax');
