@@ -39,7 +39,7 @@ class PingtraxTrackbackPreload extends XoopsPreloadItem
     	if (is_a($pingtraxitem, "PingtraxItems"))
     	{
     		$trackback = new PingtraxTrackback($pingtraxitem->getVar('item-title'), $pingtraxitem->getVar('item-author-name'), 'UTF-8');
-    		echo $trackback->rdf_autodiscover(RFC822_from_datetime($pingtraxitem->getVar('created')), $pingtraxitem->getVar('item-title'), $pingtraxitem->getVar('item-description'), $pingtraxitem->getVar('item-protocol').$pingtraxitem->getVar('item-domain').$pingtraxitem->getVar('item-referer-uri'), XOOPS_URL . '/modules/pingtrax/api/' . $pingtraxitem->getVar('referer'), $pingtraxitem->getVar('item-author-name'));
+    		echo $trackback->rdf_autodiscover($trackback->RFC822_from_datetime($pingtraxitem->getVar('created')), $pingtraxitem->getVar('item-title'), $pingtraxitem->getVar('item-description'), $pingtraxitem->getVar('item-protocol').$pingtraxitem->getVar('item-domain').$pingtraxitem->getVar('item-referer-uri'), XOOPS_URL . '/modules/pingtrax/api/' . $pingtraxitem->getVar('referer'), $pingtraxitem->getVar('item-author-name'));
     	}
     }
    

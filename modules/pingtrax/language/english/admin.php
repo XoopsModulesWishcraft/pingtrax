@@ -20,6 +20,7 @@
  * @since		1.0.1
  */
 
+// Pings
 define('_AM_PINGTRAX_PING_ID',"Identity");
 define('_AM_PINGTRAX_PING_TYPE',"Type");
 define('_AM_PINGTRAX_PING_URI',"URI/URL");
@@ -42,8 +43,26 @@ define('_AM_PINGTRAX_PING_ADD_P', 'Fill out the details in the form and submit t
 define('_AM_PINGTRAX_PING_ADD_SUCCESSFUL', 'Adding Pinglist/Sitemap was successful!');
 define('_AM_PINGTRAX_PING_ADD_FAILED', 'Adding Pinglist/Sitemap failed!');
 
+// Items
 define('_AM_PINGTRAX_ITEMS_FILTER', 'Filter by Sitemap:&nbsp;');
 define('_AM_PINGTRAX_ITEMS_FILTER_NONE', 'Display All Domain\'s Items');
+define('_AM_PINGTRAX_ITEMS_H1', 'Items in Sitemap Designations');
+define('_AM_PINGTRAX_ITEMS_ID', 'Identity');
+define('_AM_PINGTRAX_ITEMS_MODULE_DIRNAME', 'Module');
+define('_AM_PINGTRAX_ITEMS_MODULE_CLASS', 'Class');
+define('_AM_PINGTRAX_ITEMS_ITEM_ID', 'Item ID');
+define('_AM_PINGTRAX_ITEMS_CAT_ID', 'Catelogue ID');
+define('_AM_PINGTRAX_ITEMS_AUTHOR', 'Author');
+define('_AM_PINGTRAX_ITEMS_TITLE', 'Item TITLE');
+define('_AM_PINGTRAX_ITEMS_REFERERURI', 'Referer URI');
+define('_AM_PINGTRAX_ITEMS_DISCOVERY', 'Method');
+define('_AM_PINGTRAX_ITEMS_SESSIONING', 'Sessioning');
+define('_AM_PINGTRAX_ITEMS_CHILDREN', 'Trackbacks');
+define('_AM_PINGTRAX_ITEMS_FREQUENCY', 'Frequency');
+define('_AM_PINGTRAX_ITEMS_PRIORITY', 'Priority');
+define('_AM_PINGTRAX_ITEMS_CHECKING', 'Checking Next');
+define('_AM_PINGTRAX_ITEMS_CHANGED', 'Changed Last');
+
 
 // Dashboard
 define('_AM_PINGTRAX_STATISTICS', 'PingTrax Statistics');

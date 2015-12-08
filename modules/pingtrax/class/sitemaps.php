@@ -76,7 +76,7 @@ class PingtraxSitemaps extends XoopsObject
         $this->initVar('written', XOBJ_DTYPE_INT, 0, false);
         $this->initVar('created', XOBJ_DTYPE_INT, 0, false);
         $this->initVar('updated', XOBJ_DTYPE_INT, 0, false);
-        $this->initVar('offline', XOBJ_DTYPE_INT, 0, false);
+        $this->initVar('offlined', XOBJ_DTYPE_INT, 0, false);
     }
 
 }
@@ -133,17 +133,17 @@ class PingtraxSitemapsHandler extends XoopsPersistableObjectHandler
     	$items_sitemapsHandler = xoops_getmodulehandler('items_sitemaps', 'pingtrax');
     	$pingsHandler = xoops_getmodulehandler('pings', 'pingtrax');
     	$itemsHandler = xoops_getmodulehandler('items', 'pingtrax');
-    	$criteria = new CriteriaCompo(new Criteria('offline', 0));
+    	$criteria = new CriteriaCompo(new Criteria('`offlined`', 0));
     	if (!empty($referer))
-    		$criteria->add(new Criteria('referer', $referer));
-    	$sleepcriteria = new CriteriaCompo(new Criteria('sleep-till', 0), 'OR');
-    	$sleepcriteria->add(new Criteria('sleep-till', time(), "<="), 'OR');
+    		$criteria->add(new Criteria('`referer`', $referer));
+    	$sleepcriteria = new CriteriaCompo(new Criteria('`sleep-till`', 0), 'OR');
+    	$sleepcriteria->add(new Criteria('`sleep-till`', time(), "<="), 'OR');
     	$criteria->add($sleepcriteria, 'AND');
     	foreach($this->getObjects($criteria, true) as $id => $sitemap)
     	{
     		$write = false;
     		$start = microtime(true);
-    		$criteria = new CriteriaCompo(new Criteria('map-referer', $sitemap->getVar('referer')));
+    		$criteria = new CriteriaCompo(new Criteria('`map-referer`', $sitemap->getVar('referer')));
     		if ($items_sitemapsHandler->getCount($criteria)>$sitemap->getVar('items'))
     			$write = true;
     		$criteria = new Criteria('changed', $sitemap->getVar('written'), ">=");
@@ -153,7 +153,7 @@ class PingtraxSitemapsHandler extends XoopsPersistableObjectHandler
     		{ 		
     			$sitemap->setVar('written', time());
     			$sitemapTpl = new XoopsTpl();
-    			$criteria = new CriteriaCompo(new Criteria('map-referer', $sitemap->getVar('referer')));
+    			$criteria = new CriteriaCompo(new Criteria('`map-referer`', $sitemap->getVar('referer')));
     			$criteria->setOrder('`priority`, `chanaged`');
     			$criteria->setSort('ASC');
     			foreach($items_sitemapsHandler->getObjects($criteria, true) as $id => $item_sitemap)

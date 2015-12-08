@@ -103,7 +103,7 @@ class PingtraxItems extends XoopsObject
         $this->initVar('user-session', XOBJ_DTYPE_ENUM, 'unknown', true, false, false, false, array('admin','user','guest','unknown'));
         $this->initVar('created', XOBJ_DTYPE_INT, 0, false);
         $this->initVar('updated', XOBJ_DTYPE_INT, 0, false);
-        $this->initVar('offline', XOBJ_DTYPE_INT, 0, false);
+        $this->initVar('offlined', XOBJ_DTYPE_INT, 0, false);
     }
 
     /**
@@ -191,8 +191,8 @@ class PingtraxItemsHandler extends XoopsPersistableObjectHandler
 	    		$items_sitemapsHandler->insert($itemsitemap, true);
 	    		$items_pingsHandler = xoops_getmodulehandler('items_pings', 'pingtrax');
 	    		$pingsHandler = xoops_getmodulehandler('pings', 'pingtrax');
-	    		$criteria = new CriteriaCompo(new Criteria('type', 'XML-RPC'));
-	    		$criteria->add(new Criteria('offline', 0));
+	    		$criteria = new CriteriaCompo(new Criteria('`type`', 'XML-RPC'));
+	    		$criteria->add(new Criteria('`offlined`', 0));
 	    		foreach($pingsHandler->getObjects($criteria, true) as $id => $ping)
 	    		{
 	    			$itemping = $items_pingsHandler->create();

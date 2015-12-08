@@ -328,7 +328,7 @@ class PingtraxItems_sitemapsHandler extends XoopsPersistableObjectHandler
      */
     function __construct(&$db)
     {
-        parent::__construct($db, "itemtrax_items_sitemaps", 'PingtraxItems_sitemaps', 'id', 'map-referer');
+        parent::__construct($db, "pingtrax_items_sitemaps", 'PingtraxItems_sitemaps', 'id', 'map-referer');
     }
 
 
@@ -353,7 +353,7 @@ class PingtraxItems_sitemapsHandler extends XoopsPersistableObjectHandler
     	$this->addTimeLimit(120);
     	$criteria = new CriteriaCompo(new Criteria('checking', time(), "<="));
     	if (!empty($mapreferer))
-    		$criteria->add(new Criteria('map-referer', $mapreferer));
+    		$criteria->add(new Criteria('`map-referer`', $mapreferer));
     	foreach($this->getObjects($criteria, true) as $id => $item)
     	{
     		$start = microtime(true);

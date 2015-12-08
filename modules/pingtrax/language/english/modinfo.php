@@ -50,4 +50,5 @@ define('_MI_PINGTRAX_TIME_24HR', '24 Hours');
 // Admin Menus
 define('_MI_PINGTRAX_DASHBOARD', 'PingTrax Dashboard');
 define('_MI_PINGTRAX_PINGS', 'Pinglist\'s/Sitemap\'s');
+define('_MI_PINGTRAX_ITEMS', 'Discovered Item\'s');
 define('_MI_PINGTRAX_ABOUT', 'About PingTrax');
