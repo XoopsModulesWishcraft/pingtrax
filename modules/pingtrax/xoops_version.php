@@ -116,3 +116,15 @@ $modversion['config'][] = array(
 		'default'     => 3600 * mt_rand(1,12)
 );
 
+// Blocks
+
+$modversion["blocks"][1]    = array(
+		"file"            => "pingtrax_blocks.php",
+		"name"            => "Trackbacks Cloud",
+		"description"     => "Show tackbacksd",
+		"show_func"       => "pingtrax_trackbacks_block_show",
+		"edit_func"       => "pingtrax_trackbacks_block_edit",
+		"options"         => "",
+		"template"        => "trackbacks_block.html",
+);
+
